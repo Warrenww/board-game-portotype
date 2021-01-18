@@ -6,47 +6,73 @@ class Player{
   }
 }
 
+class Tile {
+  constructor(id){
+    this.id = id;
+    this.occupied = '';
+    this.dom = document.createElement('div');
+
+    this.dom.place = this.place;
+    this.dom.tileId = this.id;
+    $(this.dom).addClass('tile');
+  }
+
+  render() {
+    if (this.occupied !== '') {
+      $(this.dom).attr('occupied', this.occupied === myId ? 'self' : 'other');
+    }
+    else $(this.dom).attr('occupied', null);
+  }
+}
+
 class Board {
   constructor(){
     this.dom = $("#board");
     this.tiles = [];
     this.occupied = [];
 
-    for (let i = 0; i < 36; i ++) this.occupied.push(undefined);
-    this.occupied.forEach((item, i) => {
-      const div = document.createElement('div');
-      div.className = 'cell';
-
-      div.place = (card, player) => {
-        const arr = card.relativeShape.map(x => x + i)
-        if (arr.every(x => (x >= 0 && x < 36 && this.occupied[x] === undefined))) {
-          arr.forEach((t) => { this.occupied[t] = player.id; });
-          this.update();
-          return true;
-        } else {
-          console.warn('Invalid step');
-          return false;
-        }
-      }
-
-      this.tiles.push(div);
-      this.dom.append(div);
-    });
+    for (let i = 0; i < 36; i ++) {
+      this.tiles.push(new Tile(i));
+      this.dom.append(this.tiles[i].dom);
+    }
   }
 
-  clear() {
-    this.occupied = this.occupied.map(x => undefined);
+  place(tileId, card, player) {
+    const arr = card.relativeShape.map(x => x + tileId);
+    if (arr.every(x => (x >= 0 && x < 36 && this.tiles[x].occupied === ''))) {
+      arr.forEach((t) => { this.tiles[t].occupied = player.id; });
+      this.update();
+      return true;
+    } else {
+      console.warn('Invalid step');
+      return false;
+    }
+  }
+
+  getRow(i) {
+    return [0, 1, 2, 3, 4, 5].map(x => x + i * 6);
+  }
+
+  getColumn(i) {
+    return [0, 1, 2, 3, 4, 5].map(x => x * 6 + i);
+  }
+
+  checkFullStack() {
+    const result = [];
+    for (let i = 0; i < 6; i ++) {
+      const r = this.getRow(i);
+      const c = this.getColumn(i);
+
+    }
+  }
+
+  clearBoard() {
+    this.tiles.forEach(t => {t.occupied = '';});
     this.update();
   }
 
   update() {
-    this.tiles.forEach((t, i) => {
-      if (this.occupied[i] !== undefined) {
-        $(t).attr('occupied', this.occupied[i] === myId ? 'self' : 'other');
-      }
-      else $(t).attr('occupied', null);
-
-    });
+    this.tiles.forEach((t) => t.render());
   }
 }
 
@@ -111,12 +137,12 @@ $(document).ready(function() {
     $("#cardsPool").append(display);
   });
 
-  $("#board .cell").on('click',function(e) {
+  $("#board .tile").on('click',function(e) {
     if(selectedCard === null) return;
-    if($(this)[0].place(selectedCard, currentPlayer)) currentPlayer = currentPlayer === p1 ? p2 : p1;
+    if(board.place(e.target.tileId, selectedCard, currentPlayer)) currentPlayer = currentPlayer === p1 ? p2 : p1;
   });
 
   $("#clear_board").on('click',function() {
-    board.clear();
+    board.clearBoard();
   });
 });

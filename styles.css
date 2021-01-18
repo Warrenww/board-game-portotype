@@ -37,12 +37,12 @@ button:hover {
   margin: auto;
 }
 
-#board .cell {
+#board .tile {
   border: 1px solid #ccc;
 }
-#board .cell:hover { background: #aaa5; }
-#board .cell[occupied="self"] { background: #42b4bf55; }
-#board .cell[occupied="other"] { background: #af514b55; }
+#board .tile:hover { background: #aaa5; }
+#board .tile[occupied="self"] { background: #42b4bf55; }
+#board .tile[occupied="other"] { background: #af514b55; }
 
 
 #cardsPool {

@@ -60,17 +60,26 @@ button:hover {
 #board .tile {
   border: 1px solid #ccc;
 }
-#board .tile:hover { background: #aaa5; }
+#board .tile:hover,
+#board .tile.highlight
+ { background: #aaa5; }
 #board .tile[occupied="self"] { background: #42b4bf55; }
 #board .tile[occupied="other"] { background: #af514b55; }
 
 
 #cardsPool {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin: 1em;
+  align-items: center;
+  padding: 1em;
+  position: fixed;
+  top: 0;
+  left: 0;
+  flex-direction: column;
+  height: 100%;
+  overflow: scroll;
+  background: #ccc3;
 }
+#cardsPool::-webkit-scrollbar { width: 0;}
 
 #cardsPool .cardDisplay {
   display: flex;
@@ -83,5 +92,5 @@ button:hover {
 
 #cardsPool .cardDisplay.active,
 #cardsPool .cardDisplay:hover {
-  background: #fff2;
+  background: #fff5;
 }

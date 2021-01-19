@@ -1,10 +1,10 @@
 class Tile {
   constructor(id){
     this.id = id;
+    this.coord = new Vector(this.id);
     this.occupied = '';
     this.dom = document.createElement('div');
 
-    this.dom.place = this.place;
     this.dom.tileId = this.id;
     $(this.dom).addClass('tile');
   }
@@ -30,17 +30,31 @@ class Board {
     }
   }
 
+  validateTile({x, y}){
+    const exist = this.tiles.find(t => t.coord.equal(new Vector([x, y])));
+    if(exist && exist.occupied === '') return true;
+    return false;
+  }
+
   place(tileId, card, player) {
-    const arr = card.relativeShape.map(x => x + tileId);
-    console.log(card.relativeShape)
-    if (arr.every(x => (x >= 0 && x < 36 && this.tiles[x].occupied === ''))) {
-      arr.forEach((t) => { this.tiles[t].occupied = player.id; });
+    const arr = card.relativeShape.map(x => x.add(new Vector(tileId)));
+    if (arr.every(x => this.validateTile(x))) {
+      arr.forEach((t) => { this.tiles[t.tileId].occupied = player.id; });
       this.updateMovement(player);
       return true;
     } else {
       console.warn('Invalid step');
       return false;
     }
+  }
+
+  highlight(tileId, card) {
+    const arr = card.relativeShape.map(x => x.add(new Vector(tileId)));
+    arr.filter(x => this.validateTile(x)).forEach((t) => { $(this.tiles[t.tileId].dom).addClass('highlight'); });
+  }
+
+  deHighlight() {
+    this.tiles.forEach((t) => { $(t.dom).removeClass('highlight'); });
   }
 
   getRow(i) { return [0, 1, 2, 3, 4, 5].map(x => this.tiles[x + i * 6]); }

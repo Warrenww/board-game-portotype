@@ -52,6 +52,16 @@ $(document).ready(function() {
     if(selectedCard === null) return;
     if(board.place(e.target.tileId, selectedCard, game.currentPlayer)) game.switchPlayer();
   });
+  $("#board .tile").hover(
+    function(e) {
+      if(selectedCard === null) return;
+      board.highlight(e.target.tileId, selectedCard);
+    },
+    function (e) {
+      if(selectedCard === null) return;
+      board.deHighlight();
+    }
+  );
 
   $("#clear_board").on('click', () => board.clearBoard());
   $("#reset").on('click', () => {

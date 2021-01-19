@@ -4,9 +4,8 @@ class Card {
   }
 
   get relativeShape() {
-    const temp = this.shape.split('-').map(x => parseInt(x));
-    const scale = temp.map(x => (parseInt(x / 5) * 6 + (x % 5)));
-    return scale.map(x => x - scale[0]);
+    const temp = this.shape.split('-').map(x => new Vector(parseInt(x), 5));
+    return temp.map(x => x.sub(temp[0]));
   }
 
   render() {

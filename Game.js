@@ -33,18 +33,41 @@ class Game {
   constructor() {
     this.players = [];
     this.currentPlayerIndex = 0;
+    this.cardsPool = [];
+    this.selectedCard = null;
 
     this.players[0] = new Player({
       id: 0,
       // name: prompt('Player 1:')
-      name: 'me',
+      name: 'player 1',
     });
     this.players[1] = new Player({
       id: 1,
       // name: prompt('Player 2:')
-      name: 'them',
+      name: 'player 2',
     });
     $(this.players[0].infoDiv).addClass('active');
+
+    CardsPool.forEach((item, i) => {
+      const card = new Card(item);
+      const display = card.render();
+
+      display.onclick = (e) => {
+        if($(e.target).is('.active')) {
+          this.selectedCard = null;
+          $(e.target).removeClass('active');
+        } else {
+          this.selectedCard = card;
+          $(e.target).addClass('active');
+          $(e.target).siblings().removeClass('active');
+        }
+      }
+      $("#cardsPool").append(display);
+
+      card.initEffect(this);
+      this.cardsPool.push(card);
+    });
+
   }
 
   get currentPlayer() {
@@ -66,7 +89,6 @@ class Game {
     const dead = this.players.find(x => x.hp <= 0);
     if (dead) {
       alert(`${dead.name} is dead.`);
-      this.reset();
     }
   }
 

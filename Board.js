@@ -40,6 +40,9 @@ class Board {
     const arr = card.relativeShape.map(x => x.add(new Vector(tileId)));
     if (arr.every(x => this.validateTile(x))) {
       arr.forEach((t) => { this.tiles[t.tileId].occupied = player.id; });
+      if(card.effect?.trigger === 'onplace') {
+        card.effect.dispatch({player});
+      }
       this.updateMovement(player);
       return true;
     } else {

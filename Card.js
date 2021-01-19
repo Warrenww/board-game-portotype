@@ -1,6 +1,11 @@
 class Card {
-  constructor({shape}) {
+  constructor({shape, effect}) {
     this.shape = shape;
+    this.effect = effect;
+  }
+
+  initEffect(game) {
+    this.effect?.createEffect(game);
   }
 
   get relativeShape() {
@@ -22,6 +27,12 @@ class Card {
       ctx.fillRect((x % 5)* width + 1, parseInt(x / 5) * height + 1, width - 2, height - 2);
     });
     card.append(icon);
+
+    const desciption = document.createElement('div');
+    desciption.innerText = `Effect: ${this.effect ? this.effect.name : '-'}`;
+
+    card.append(desciption);
+    
     return card;
   }
 }

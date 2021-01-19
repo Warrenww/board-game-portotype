@@ -11,37 +11,27 @@ const CardsPool = [
   { shape: '6-5-7-11' },
   { shape: '6-1-11-7' },
   { shape: '6-1-11-5' },
-  { shape: '1-0-6' },
+  {
+    shape: '1-0-6',
+    effect: new DamageOtherPlayer({
+      name: '打出: 對敵方造成 1 點傷害',
+      trigger: 'onplace',
+      damage: 1,
+    }),
+  },
   { shape: '1-0-5' },
   { shape: '1-0-5-6' },
   { shape: '6-1-2-3-5-8-9-11-12-13' },
   { shape: '11-1-16-6-21-5-7-15-17' },
   { shape: '7-2-3-4-10-11-12' },
 ];
-
-
 const myId = 0;
+
+
 $(document).ready(function() {
   const game = new Game();
   const board = new Board(game);
   const cardsPool = CardsPool.map(x => new Card(x));
-
-  let selectedCard = null;
-
-  cardsPool.forEach(x => {
-    const display = x.render();
-    display.onclick = function() {
-      if($(this).is('.active')) {
-        selectedCard = null;
-        $(this).removeClass('active');
-      } else {
-        selectedCard = x;
-        $(this).addClass('active');
-        $(this).siblings().removeClass('active');
-      }
-    }
-    $("#cardsPool").append(display);
-  });
 
   game.players.forEach(x => {
     const display = x.render();
@@ -49,16 +39,16 @@ $(document).ready(function() {
   });
 
   $("#board .tile").on('click',function(e) {
-    if(selectedCard === null) return;
-    if(board.place(e.target.tileId, selectedCard, game.currentPlayer)) game.switchPlayer();
+    if(game.selectedCard === null) return;
+    if(board.place(e.target.tileId, game.selectedCard, game.currentPlayer)) game.switchPlayer();
   });
   $("#board .tile").hover(
     function(e) {
-      if(selectedCard === null) return;
-      board.highlight(e.target.tileId, selectedCard);
+      if(game.selectedCard === null) return;
+      board.highlight(e.target.tileId, game.selectedCard);
     },
     function (e) {
-      if(selectedCard === null) return;
+      if(game.selectedCard === null) return;
       board.deHighlight();
     }
   );

@@ -38,18 +38,17 @@ class Board {
     return false;
   }
 
-  place(tileId, card, player) {
+  async place(tileId, card, player) {
     const arr = card.relativeShape.map(x => x.add(new Vector(tileId)));
     if (arr.every(x => this.validateTile(x))) {
       arr.forEach((t) => { this.tiles[t.tileId].occupied = player.id; });
-      if(card.effect?.trigger === 'onplace') {
-        card.effect.dispatch({player, tileId, card, board: this});
-      }
       this.updateMovement(player);
-      return true;
+      if(card.effect?.trigger === 'onplace') {
+        await card.effect.dispatch({player, tileId, card, board: this});
+      }
+      return Promise.resolve(true);
     } else {
-      console.warn('Invalid step');
-      return false;
+      return Promise.reject('Invalid step');
     }
   }
 

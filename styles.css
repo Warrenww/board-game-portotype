@@ -94,11 +94,34 @@ button:hover {
   cursor: pointer;
   border-radius: 10px;
   flex-direction: column;
-  width: 120px;
+  width: 135px;
+  align-items: center;
   font-weight: bold;
 }
 
 #cardsPool .cardDisplay.active,
 #cardsPool .cardDisplay:hover {
   background: #fff5;
+}
+
+#backdrop {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #3335;
+  z-index: 2;
+  display: none;
+}
+
+.indicator {
+  position: fixed;
+  box-shadow: 0 0 15px white;
+  z-index: 10;
+  cursor: pointer;
+}
+
+.indicator:hover{
+  backdrop-filter: brightness(1.5);
 }

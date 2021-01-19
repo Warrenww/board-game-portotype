@@ -9,9 +9,14 @@ $(document).ready(function() {
     $("#info").append(display);
   });
 
-  $("#board .tile").on('click',function(e) {
+  $("#board .tile").on('click',async function(e) {
     if(game.selectedCard === null) return;
-    if(board.place(e.target.tileId, game.selectedCard, game.currentPlayer)) game.switchPlayer();
+    try {
+      const validStep = await board.place(e.target.tileId, game.selectedCard, game.currentPlayer);
+      if(validStep) game.switchPlayer();
+    } catch (e) {
+      console.warn(e);
+    }
   });
   $("#board .tile").hover(
     function(e) {

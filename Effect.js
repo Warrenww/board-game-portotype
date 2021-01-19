@@ -13,7 +13,7 @@ class DamageOtherPlayer extends Effect {
   }
 
   createEffect(game) {
-      super.dispatch = ({player}) => game.applyDamageToOther(player, this.damage);
+      super.dispatch = ({player}) => Promise.resolve(game.applyDamageToOther(player, this.damage));
   }
 }
 
@@ -40,13 +40,35 @@ class TransformTile extends Effect {
           if(!acc.includes(t)) acc.push(t);
         });
         return acc;
-      }, []);
+      }, []).filter(x => x);
 
       const targetTile = this.target === 'adjacent'
         ? adjacentTiles.filter(t => t.occupied === game.getOppositePlayer(player).id)
         : board.tiles.filter(t => (!adjacentTiles.includes(t) && t.occupied === game.getOppositePlayer(player).id));
 
-      console.log(targetTile)
+      if(targetTile.length) {
+        return new Promise(function(resolve, reject) {
+          $("#backdrop").show();
+
+          targetTile.forEach((t) => {
+            const indicator = document.createElement('div');
+            indicator.className = 'indicator';
+            document.body.append(indicator);
+            const {top, left, width, height} = t.dom.getBoundingClientRect();
+            $(indicator).css({ top, left, width, height });
+            indicator.onclick = () => {
+              const currentPlayer = game.getPlayerById(t.occupied);
+              if (currentPlayer) {
+                t.occupied = game.getOppositePlayer(currentPlayer).id;
+                board.update();
+              }
+              $(".indicator").remove();
+              $("#backdrop").hide();
+              resolve(true);
+            }
+          });
+        });
+      } else return Promise.resolve(true);
     }
   }
 }

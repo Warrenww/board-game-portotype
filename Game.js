@@ -51,15 +51,16 @@ class Game {
     CardsPool_1.concat(CardsPool_2).forEach((item, i) => {
       const card = new Card(item);
       const display = card.render();
+      const game = this;
 
-      display.onclick = (e) => {
-        if($(e.target).is('.active')) {
-          this.selectedCard = null;
-          $(e.target).removeClass('active');
+      display.onclick = function() {
+        if($(this).is('.active')) {
+          game.selectedCard = null;
+          $(this).removeClass('active');
         } else {
-          this.selectedCard = card;
-          $(e.target).addClass('active');
-          $(e.target).siblings().removeClass('active');
+          game.selectedCard = card;
+          $(this).addClass('active');
+          $(this).siblings().removeClass('active');
         }
       }
       $("#cardsPool").append(display);
@@ -73,6 +74,8 @@ class Game {
   get currentPlayer() {
     return this.players[this.currentPlayerIndex];
   }
+
+  getPlayerById(id) { return this.players.find(p => p.id === id); }
 
   switchPlayer() {
     this.currentPlayerIndex = Number(!this.currentPlayerIndex);

@@ -32,6 +32,7 @@ class Board {
 
   place(tileId, card, player) {
     const arr = card.relativeShape.map(x => x + tileId);
+    console.log(card.relativeShape)
     if (arr.every(x => (x >= 0 && x < 36 && this.tiles[x].occupied === ''))) {
       arr.forEach((t) => { this.tiles[t].occupied = player.id; });
       this.updateMovement(player);

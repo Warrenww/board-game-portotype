@@ -5,7 +5,8 @@ class Card {
 
   get relativeShape() {
     const temp = this.shape.split('-').map(x => parseInt(x));
-    return temp.map(x => x - temp[0]).map(x => (parseInt(x / 4) * 6 + (x % 4)));
+    const scale = temp.map(x => (parseInt(x / 5) * 6 + (x % 5)));
+    return scale.map(x => x - scale[0]);
   }
 
   render() {
@@ -17,9 +18,9 @@ class Card {
     const ctx = icon.getContext("2d");
     ctx.fillStyle = "#79697e";
     this.shape.split('-').forEach(x => {
-      const width = icon.width / 4;
-      const height = icon.height / 4;
-      ctx.fillRect((x % 4)* width, parseInt(x / 4) * height, width, height);
+      const width = icon.width / 5;
+      const height = icon.height / 5;
+      ctx.fillRect((x % 5)* width + 1, parseInt(x / 5) * height + 1, width - 2, height - 2);
     });
     card.append(icon);
     return card;

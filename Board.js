@@ -30,8 +30,10 @@ class Board {
     }
   }
 
+  getTile({x, y}) { return this.tiles.find(t => t.coord.equal(new Vector([x, y]))); }
+
   validateTile({x, y}){
-    const exist = this.tiles.find(t => t.coord.equal(new Vector([x, y])));
+    const exist = this.getTile({x, y});
     if(exist && exist.occupied === '') return true;
     return false;
   }
@@ -41,7 +43,7 @@ class Board {
     if (arr.every(x => this.validateTile(x))) {
       arr.forEach((t) => { this.tiles[t.tileId].occupied = player.id; });
       if(card.effect?.trigger === 'onplace') {
-        card.effect.dispatch({player});
+        card.effect.dispatch({player, tileId, card, board: this});
       }
       this.updateMovement(player);
       return true;

@@ -1,5 +1,6 @@
 class Card {
-  constructor({shape, effect}) {
+  constructor({group, shape, effect}) {
+    this.group = group;
     this.shape = shape;
     this.effect = effect;
   }
@@ -15,6 +16,11 @@ class Card {
 
   render() {
     const card = document.createElement('div');
+
+    const group = document.createElement('h4');
+    group.innerText = this.group;
+    card.append(group);
+
     card.className = "cardDisplay";
     const icon = document.createElement('canvas');
     icon.width = 80;
@@ -32,7 +38,7 @@ class Card {
     desciption.innerText = `Effect: ${this.effect ? this.effect.name : '-'}`;
 
     card.append(desciption);
-    
+
     return card;
   }
 }

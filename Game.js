@@ -48,7 +48,7 @@ class Game {
     });
     $(this.players[0].infoDiv).addClass('active');
 
-    CardsPool.forEach((item, i) => {
+    CardsPool_1.concat(CardsPool_2).forEach((item, i) => {
       const card = new Card(item);
       const display = card.render();
 
@@ -79,8 +79,10 @@ class Game {
     this.update();
   }
 
+  getOppositePlayer(player) { return this.players.find(x => x !== player); }
+
   applyDamageToOther(player, damage) {
-    const other = this.players.find(x => x !== player);
+    const other = this.getOppositePlayer(player);
     other.applyDamage(damage)
     this.update();
   }

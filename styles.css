@@ -81,6 +81,11 @@ button:hover {
 }
 #cardsPool::-webkit-scrollbar { width: 0;}
 
+#cardsPool .cardDisplay h4 {
+  margin: 0;
+  margin-bottom: 1em;
+  text-align:  center;
+}
 #cardsPool .cardDisplay {
   display: flex;
   padding: 1em;

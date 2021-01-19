@@ -1,11 +1,3 @@
-class Player{
-  constructor({name, id,}) {
-    this.id = id;
-    this.name = name;
-    this.hp = 30;
-  }
-}
-
 const CardsPool = [
   { shape: '8-0-4-9' },
   { shape: '5-0-4-9' },
@@ -16,12 +8,10 @@ const CardsPool = [
 
 const myId = 0;
 $(document).ready(function() {
-  const board = new Board();
-  const p1 = new Player({name: 'me', id: 0});
-  const p2 = new Player({name: 'them', id: 1});
+  const game = new Game();
+  const board = new Board(game);
   const cardsPool = CardsPool.map(x => new Card(x));
 
-  let currentPlayer = p1;
   let selectedCard = null;
 
   cardsPool.forEach(x => {
@@ -39,12 +29,21 @@ $(document).ready(function() {
     $("#cardsPool").append(display);
   });
 
-  $("#board .tile").on('click',function(e) {
-    if(selectedCard === null) return;
-    if(board.place(e.target.tileId, selectedCard, currentPlayer)) currentPlayer = currentPlayer === p1 ? p2 : p1;
+  game.players.forEach(x => {
+    const display = x.render();
+    $("#info").append(display);
   });
 
-  $("#clear_board").on('click',function() {
-    board.clearBoard();
+  $("#board .tile").on('click',function(e) {
+    if(selectedCard === null) return;
+    if(board.place(e.target.tileId, selectedCard, game.currentPlayer)) game.switchPlayer();
+  });
+
+  $("#clear_board").on('click', () => board.clearBoard());
+  $("#reset").on('click', () => {
+    if(confirm('Sure?')) {
+      game.reset();
+      board.clearBoard();
+    }
   });
 });

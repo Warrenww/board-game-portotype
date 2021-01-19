@@ -18,7 +18,8 @@ class Tile {
 }
 
 class Board {
-  constructor(){
+  constructor(game){
+    this.game = game;
     this.dom = $("#board");
     this.tiles = [];
     this.occupied = [];
@@ -72,8 +73,7 @@ class Board {
       }, 0);
       return acc + d;
     }, 0);
-
-    console.log(damage);
+    if (damage) this.game.applyDamageToOther(player, damage);
     this.update();
   }
 

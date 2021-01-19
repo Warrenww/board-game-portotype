@@ -90,6 +90,14 @@ class Game {
     this.update();
   }
 
+  transformTile(tile, board) {
+    const currentPlayer = this.getPlayerById(tile.occupied);
+    if (currentPlayer) {
+      tile.occupied = this.getOppositePlayer(currentPlayer).id;
+      board.update();
+    }
+  }
+
   checkEndGame() {
     const dead = this.players.find(x => x.hp <= 0);
     if (dead) {

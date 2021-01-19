@@ -122,6 +122,8 @@ button:hover {
   cursor: pointer;
 }
 
-.indicator:hover{
+.indicator:hover,
+.indicator.choosed
+{
   backdrop-filter: brightness(1.5);
 }

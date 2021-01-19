@@ -96,6 +96,8 @@ const CardsPool_2 = [
       name: '打出: 指定與此方塊相鄰的一個敵方格，將其轉化為我方格。',
       trigger: 'onplace',
       target: 'adjacent',
+      method: 'playerChoose',
+      quantity: 1,
     }),
   },
   {
@@ -104,7 +106,20 @@ const CardsPool_2 = [
     effect: new TransformTile({
       name: '打出: 指定與此方塊不相鄰的一個敵方格，將其轉化為我方格。',
       trigger: 'onplace',
-      target: 'anti-adjacent', 
+      target: 'anti-adjacent',
+      method: 'playerChoose',
+      quantity: 1,
+    }),
+  },
+  {
+    group: '疫苗',
+    shape: '5-0-10-15',
+    effect: new TransformTile({
+      name: '打出: 隨機將此方塊周圍的兩個敵方格，轉化為我方格。',
+      trigger: 'onplace',
+      target: 'adjacent',
+      method: 'random',
+      quantity: 2,
     }),
   },
 ];

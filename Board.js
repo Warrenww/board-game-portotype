@@ -46,7 +46,7 @@ class Board {
     const arr = card.relativeShape.map(x => x.add(new Vector(tileId)));
     if (arr.every(x => this.validateTile(x))) {
       const enhance = this.game.existEffects
-        .filter(x => x.enhaceTarget === 'onplace')
+        .filter(x => x?.enhaceTarget === 'onplace')
         .filter(x => this.game.getPlayerById(x.tile.occupied) === player)
         .filter(x => x.constrain(card));
       enhance.forEach((item, i) => {
@@ -59,13 +59,14 @@ class Board {
           this.tiles[t.tileId].effect = t.data.effect;
         }
       });
+      if(card.effect?.trigger === 'exist') {
+        card.effect.appendToGame(this.getTile(arr[card.pivotIdx]), this.game);
+      }
       this.updateMovement(player, card);
       if(card.effect?.trigger === 'onplace') {
         await card.effect.dispatch({player, tileId, card, board: this});
       }
-      if(card.effect?.trigger === 'exist') {
-        card.effect.appendToGame(this.getTile(arr[card.pivotIdx]), this.game);
-      }
+      player.draw();
       return Promise.resolve(true);
     } else {
       return Promise.reject('Invalid step');

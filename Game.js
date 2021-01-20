@@ -1,34 +1,3 @@
-class Player {
-  constructor({name, id,}) {
-    this.id = id;
-    this.name = name;
-    this.hp = 30;
-    this.infoDiv = document.createElement('div');
-    this.infoDiv.className = 'player-info' + (this.id === myId ? ' player' : '');
-  }
-
-  applyDamage(damage) {
-    this.hp -= damage;
-    return this;
-  }
-
-  update() {
-    $(this.infoDiv).find('.hp').text(`hp: ${this.hp}`);
-  }
-
-  render() {
-    const nameDiv = document.createElement('div');
-    nameDiv.innerText = `name: ${this.name}`;
-    const hpDiv = document.createElement('div');
-    hpDiv.className = 'hp';
-    hpDiv.innerText = `hp: ${this.hp}`;
-
-    this.infoDiv.append(nameDiv);
-    this.infoDiv.append(hpDiv);
-    return this.infoDiv;
-  }
-}
-
 class Game {
   constructor() {
     this.players = [];
@@ -47,29 +16,71 @@ class Game {
       // name: prompt('Player 2:')
       name: 'player 2',
     });
-    $(this.players[0].infoDiv).addClass('active');
+    this.playersInitCardsPool();
+  }
 
-    CardsPool_1.concat(CardsPool_2).forEach((item, i) => {
-      const card = new Card(item);
-      const display = card.render();
-      const game = this;
+  async playersInitCardsPool() {
+    this.players[0].cardsPool = shuffle(await this.playerChooseCards(this.players[0].name));
+    this.players[1].cardsPool = shuffle(await this.playerChooseCards(this.players[1].name));
+    this.players.forEach((p) => { p.drawCards = randomChoose(p.cardsPool, 5) });
+    this.update();
+  }
 
-      display.onclick = function() {
-        if($(this).is('.active')) {
-          game.selectedCard = null;
-          $(this).removeClass('active');
-        } else {
-          game.selectedCard = card;
-          $(this).addClass('active');
-          $(this).siblings().removeClass('active');
+  playerChooseCards(name) {
+    return new Promise((resolve, reject) => {
+      $("#cardsPool").css('display', 'flex');
+      $("#cardsPool").empty();
+      $("#cardsPool").append(`<h3 style='width:100%'>${name}</h3>`);
+
+      const maxQuantity = 30;
+      const pools = [];
+      const total = CardsPool_1
+        .concat(CardsPool_2)
+        .concat(CardsPool_1)
+        .concat(CardsPool_2)
+        .map(x => {
+          const card = new Card(x);
+          card.initEffect(this);
+          return card;
+        });
+
+      total.forEach((card, i) => {
+        const display = card.render();
+        const game = this;
+
+        display.onclick = function() {
+          if($(this).is('.active')) {
+            // game.selectedCard = null;
+            $(this).removeClass('active');
+            pools.splice(pools.indexOf(card), 1);
+          } else if(pools.length < maxQuantity){
+            // game.selectedCard = card;
+            $(this).addClass('active');
+            // $(this).siblings().removeClass('active');
+            pools.push(card);
+          }
         }
+        $("#cardsPool").append(display);
+        // this.cardsPool.push(card);
+      });
+      const confirmChoose = document.createElement('button');
+      confirmChoose.onclick = () => {
+        $("#cardsPool").css('display', 'none');
+        resolve(pools);
       }
-      $("#cardsPool").append(display);
+      confirmChoose.innerText = 'Confirm';
 
-      card.initEffect(this);
-      this.cardsPool.push(card);
+      const randomChooseButton = document.createElement('button');
+      randomChooseButton.onclick = () => {
+        $("#cardsPool").css('display', 'none');
+        resolve(randomChoose(total, 30));
+      }
+      randomChooseButton.innerText = 'Random';
+
+
+      $("#cardsPool").append(confirmChoose);
+      $("#cardsPool").append(randomChooseButton);
     });
-
   }
 
   get currentPlayer() {
@@ -79,7 +90,14 @@ class Game {
   getPlayerById(id) { return this.players.find(p => p.id === id); }
 
   switchPlayer() {
+    const currentPlayer = this.players[this.currentPlayerIndex];
+    currentPlayer.drawCards.splice(currentPlayer.drawCards.indexOf(this.selectedCard), 1);
+    while (currentPlayer.draw.length > 5) {
+      currentPlayer.draw.splice(randomIndex(currentPlayer.draw), 1);
+    }
+
     this.currentPlayerIndex = Number(!this.currentPlayerIndex);
+    this.selectedCard = null;
     this.update();
   }
 
@@ -134,9 +152,30 @@ class Game {
 
   update() {
     const result = this.checkEndGame();
-    const tmp = (this.players[this.currentPlayerIndex].infoDiv);
+    const tmp = this.players[this.currentPlayerIndex].infoDiv;
     $(tmp).addClass('active');
     $(tmp).siblings().removeClass('active');
+
+    const cards = this.players[this.currentPlayerIndex].drawCards;
+    $("#sidebar").empty();
+    cards.forEach((card, i) => {
+      // const card = new Card(c);
+      const display = card.render();
+      const game = this;
+
+      display.onclick = function() {
+        if($(this).is('.active')) {
+          game.selectedCard = null;
+          $(this).removeClass('active');
+        } else {
+          game.selectedCard = card;
+          $(this).addClass('active');
+          $(this).siblings().removeClass('active');
+        }
+      }
+      $("#sidebar").append(display);
+    });
+
     this.players.forEach(x => x.update());
   }
 }

@@ -93,9 +93,7 @@ button:hover {
   --color: #48c7fe;
 }
 
-
-
-#cardsPool {
+#sidebar {
   display: flex;
   align-items: center;
   padding: 1em;
@@ -107,14 +105,35 @@ button:hover {
   overflow: scroll;
   background: #ccc3;
 }
-#cardsPool::-webkit-scrollbar { width: 0;}
 
-#cardsPool .cardDisplay h4 {
+#cardsPool {
+  display: flex;
+  align-items: center;
+  padding: 1em;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  overflow: scroll;
+  background: #333d;
+  width: 100vw;
+  flex-wrap: wrap;
+  backdrop-filter: blur(5px);
+  color: white;
+  display: none;
+  z-index: 2;
+}
+
+#cardsPool::-webkit-scrollbar,
+#sidebar::-webkit-scrollbar
+{ width: 0;}
+
+.cardDisplay h4 {
   margin: 0;
   margin-bottom: 1em;
   text-align:  center;
 }
-#cardsPool .cardDisplay {
+.cardDisplay {
   display: flex;
   padding: 1em;
   border: 1px solid #fff;
@@ -127,8 +146,8 @@ button:hover {
   font-weight: bold;
 }
 
-#cardsPool .cardDisplay.active,
-#cardsPool .cardDisplay:hover {
+.cardDisplay.active,
+.cardDisplay:hover {
   background: #fff5;
 }
 

@@ -18,16 +18,40 @@
 
     <div id="cardsPool"></div>
 
+    <div id="sidebar"></div>
+
     <div id="backdrop"></div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
-    <script src="/Board.js"></script>
-    <script src="/Card.js"></script>
-    <script src="/Effect.js"></script>
-    <script src="/CardsPool.js"></script>
-    <script src="/Game.js"></script>
-    <script src="/Vector.js"></script>
-    <script src="/prototype.js"></script>
+    <script>
+      const myId = 0;
+
+      const randomChoose = (arr, n = 0) => {
+        if(n === 0) {
+          return arr.splice(randomIndex(arr), 1)[0];
+        } else {
+          const res = [];
+          let c = 0;
+          while(c < n && arr.length) {
+            c ++;
+            res.push(randomChoose(arr, 0));
+          }
+          return res;
+        }
+      }
+
+      const shuffle = (arr) => arr.sort((a,b) => Math.random() - Math.random());
+
+      const randomIndex = (arr) => parseInt(Math.random() * arr.length);
+    </script>
+    <script src="./Board.js"></script>
+    <script src="./Card.js"></script>
+    <script src="./Effect.js"></script>
+    <script src="./CardsPool.js"></script>
+    <script src="./Player.js"></script>
+    <script src="./Game.js"></script>
+    <script src="./Vector.js"></script>
+    <script src="./prototype.js"></script>
   </body>
 </html>

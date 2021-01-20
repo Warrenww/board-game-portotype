@@ -97,7 +97,7 @@ class TransformTile extends Effect {
           if(this.method === 'playerChoose') await this.playerChooseTile(targetTile);
           else if (this.method === 'random') {
             while (targetTile.length && this.choosedTiles.length < this.quantity) {
-              const idx = parseInt(targetTile.length * Math.random());
+              const idx = parseInt(randomIndex(targetTile));
               this.choosedTiles.push(targetTile.splice(idx, 1)[0]);
             }
           } else if (this.method === 'all') {

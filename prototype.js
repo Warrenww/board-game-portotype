@@ -1,5 +1,3 @@
-const myId = 0;
-
 $(document).ready(function() {
   const game = new Game();
   const board = new Board(game);
@@ -24,7 +22,6 @@ $(document).ready(function() {
       board.highlight(e.target.tileId, game.selectedCard);
     },
     function (e) {
-      if(game.selectedCard === null) return;
       board.deHighlight();
     }
   );

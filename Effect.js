@@ -113,6 +113,6 @@ class Regenerate extends Effect {
 
   createEffect(game) {
     super.createEffect();
-    super.dispatch = ({player}) => Promise.resolve(game.regenerate(player, this.hp));
+    super.dispatch = ({player, n}) => Promise.resolve(game.regenerate(player, (typeof this.hp === 'function' ? this.hp(n) : this.hp)));
   }
 }

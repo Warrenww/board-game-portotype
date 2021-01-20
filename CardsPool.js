@@ -141,4 +141,13 @@ const CardsPool_2 = [
       hp: 3,
     }),
   },
+  {
+    group: '疫苗',
+    shape: '1-0-2-5-7',
+    effect: new Regenerate({
+      name: '填滿【N 任意】: 回復我方 2 x N 點生命',
+      trigger: 'onfill',
+      hp: (n = 0) => n * 2,
+    }),
+  },
 ];

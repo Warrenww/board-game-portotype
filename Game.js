@@ -100,7 +100,8 @@ class Game {
 
   regenerate(player, hp){
     player.hp += hp;
-    return true;  
+    this.update();
+    return true;
   }
 
   checkEndGame() {

@@ -48,7 +48,7 @@ class Board {
           this.tiles[t.tileId].effect = t.data.effect;
         }
       });
-      this.updateMovement(player);
+      this.updateMovement(player, card);
       if(card.effect?.trigger === 'onplace') {
         await card.effect.dispatch({player, tileId, card, board: this});
       }
@@ -89,21 +89,27 @@ class Board {
     this.update();
   }
 
-  async updateMovement(player) {
+  async updateMovement(player, card) {
     const check = this.checkFullStack();
     console.log(check);
-    const damage = await check.reduce(async (acc, curr) => {
-      const d = await curr.reduce(async (a, t) => {
-        const result = await t.effect?.dispatch({player: this.game.getPlayerById(t.occupied)});
-        if (result) t.effect = null;
-        t.render();
-        const tmp = await a + (t.occupied === player.id ? 1 : 0);
-        t.occupied = '';
-        return Promise.resolve(tmp);
+    if (check.length) {
+      const damage = await check.reduce(async (acc, curr) => {
+        const d = await curr.reduce(async (a, t) => {
+          const result = await t.effect?.dispatch({player: this.game.getPlayerById(t.occupied)});
+          if (result) t.effect = null;
+          t.render();
+          const tmp = await a + (t.occupied === player.id ? 1 : 0);
+          t.occupied = '';
+          return Promise.resolve(tmp);
+        }, 0);
+        return Promise.resolve(await acc + d);
       }, 0);
-      return Promise.resolve(await acc + d);
-    }, 0);
-    if (damage) this.game.applyDamageToOther(player, damage);
+      if (damage) this.game.applyDamageToOther(player, damage);
+
+      if (card.effect?.trigger === 'onfill') {
+        card.effect.dispatch({player, n: check.length});
+      };
+    }
     this.update();
   }
 

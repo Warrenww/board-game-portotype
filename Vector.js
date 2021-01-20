@@ -11,6 +11,11 @@ class Vector {
     }
   }
 
+  static applyData(v, data) {
+    v.data = data;
+      return v;
+  }
+
   normalize(){
     while(this.x <= -this.size) {
       this.y -= 1;
@@ -24,11 +29,17 @@ class Vector {
   }
 
   add(v) {
-    return new Vector([this.x + v.x, this.y + v.y]);
+    const vec = new Vector([this.x + v.x, this.y + v.y]);
+    const data = {...(this.data || {}), ...(v.data || {})};
+    Vector.applyData(vec, data);
+    return vec;
   }
 
   sub(v) {
-    return new Vector([this.x - v.x, this.y - v.y]);
+    const vec = new Vector([this.x - v.x, this.y - v.y]);
+    const data = {...(this.data || {}), ...(v.data || {})};
+    Vector.applyData(vec, data);
+    return vec;
   }
 
   equal(v) {

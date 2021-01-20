@@ -122,4 +122,23 @@ const CardsPool_2 = [
       quantity: 2,
     }),
   },
+  {
+    group: '疫苗',
+    shape: '5-0-6-7',
+    effect: new Regenerate({
+      name: '打出: 對我方回復2點生命',
+      trigger: 'onplace',
+      hp: 2,
+    }),
+  },
+  {
+    group: '疫苗',
+    shape: '5-0-10-11',
+    effect: new Regenerate({
+      name: '消除: 對我方回復3點生命',
+      trigger: 'onclear',
+      pivot: 10,
+      hp: 3,
+    }),
+  },
 ];

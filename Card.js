@@ -6,12 +6,15 @@ class Card {
   }
 
   initEffect(game) {
+    this.effect?.applyToCard(this);
     this.effect?.createEffect(game);
   }
 
   get relativeShape() {
     const temp = this.shape.split('-').map(x => new Vector(parseInt(x), 5));
-    return temp.map(x => x.sub(temp[0]));
+    const vec = temp.map(x => x.sub(temp[0]));
+    if(this.effect?.trigger === 'onclear') return vec.map((x, i) => (i === this.pivotIdx ? Vector.applyData(x, {effect: this.effect}) : x));
+    return vec;
   }
 
   render() {
@@ -26,8 +29,8 @@ class Card {
     icon.width = 80;
     icon.height = 80;
     const ctx = icon.getContext("2d");
-    ctx.fillStyle = "#79697e";
     this.shape.split('-').forEach(x => {
+      ctx.fillStyle = this.effect?.pivotIdx === parseInt(x) ? "#fee348" : "#79697e";
       const width = icon.width / 5;
       const height = icon.height / 5;
       ctx.fillRect((x % 5)* width + 1, parseInt(x / 5) * height + 1, width - 2, height - 2);

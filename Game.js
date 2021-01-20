@@ -98,6 +98,11 @@ class Game {
     }
   }
 
+  regenerate(player, hp){
+    player.hp += hp;
+    return true;  
+  }
+
   checkEndGame() {
     const dead = this.players.find(x => x.hp <= 0);
     if (dead) {

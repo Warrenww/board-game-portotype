@@ -12,6 +12,7 @@ class Tile {
   render() {
     if (this.occupied !== '') {
       $(this.dom).attr('occupied', this.occupied === myId ? 'self' : 'other');
+      $(this.dom).attr('effectTrigger', this.effect?.trigger || '');
     }
     else $(this.dom).attr('occupied', null);
   }
@@ -41,7 +42,12 @@ class Board {
   async place(tileId, card, player) {
     const arr = card.relativeShape.map(x => x.add(new Vector(tileId)));
     if (arr.every(x => this.validateTile(x))) {
-      arr.forEach((t) => { this.tiles[t.tileId].occupied = player.id; });
+      arr.forEach((t) => {
+        this.tiles[t.tileId].occupied = player.id;
+        if (t.data?.effect) {
+          this.tiles[t.tileId].effect = t.data.effect;
+        }
+      });
       this.updateMovement(player);
       if(card.effect?.trigger === 'onplace') {
         await card.effect.dispatch({player, tileId, card, board: this});
@@ -71,8 +77,8 @@ class Board {
       const r = this.getRow(i);
       const c = this.getColumn(i);
 
-      if(r.every(t => (t.occupied !== ''))) result.push(r.map(({id, occupied}) => ({tileId: id, playerId: occupied})));
-      if(c.every(t => (t.occupied !== ''))) result.push(c.map(({id, occupied}) => ({tileId: id, playerId: occupied})));
+      if(r.every(t => (t.occupied !== ''))) result.push(r);
+      if(c.every(t => (t.occupied !== ''))) result.push(c);
     }
 
     return result;
@@ -83,14 +89,19 @@ class Board {
     this.update();
   }
 
-  updateMovement(player) {
+  async updateMovement(player) {
     const check = this.checkFullStack();
-    const damage = check.reduce((acc, curr) => {
-      const d = curr.reduce((a, t) => {
-        this.tiles[t.tileId].occupied = '';
-        return a + (t.playerId === player.id ? 1 : 0);
+    console.log(check);
+    const damage = await check.reduce(async (acc, curr) => {
+      const d = await curr.reduce(async (a, t) => {
+        const result = await t.effect?.dispatch({player: this.game.getPlayerById(t.occupied)});
+        if (result) t.effect = null;
+        t.render();
+        const tmp = await a + (t.occupied === player.id ? 1 : 0);
+        t.occupied = '';
+        return Promise.resolve(tmp);
       }, 0);
-      return acc + d;
+      return Promise.resolve(await acc + d);
     }, 0);
     if (damage) this.game.applyDamageToOther(player, damage);
     this.update();

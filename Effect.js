@@ -1,8 +1,20 @@
 class Effect {
-  constructor({name, trigger}){
+  constructor({name, trigger, pivot}){
     this.name = name;
     this.trigger = trigger;
     this.dispatch = null;
+    this.pivotIdx = pivot;
+    this.card = null;
+  }
+
+  applyToCard(card) {
+    this.card = card;
+  }
+
+  createEffect(card) {
+    if (this.trigger === 'onclear') {
+      this.card.pivotIdx = this.card.shape.split('-').map(x => parseInt(x)).indexOf(this.pivotIdx);
+    }
   }
 }
 
@@ -13,6 +25,7 @@ class DamageOtherPlayer extends Effect {
   }
 
   createEffect(game) {
+    super.createEffect();
       super.dispatch = ({player}) => Promise.resolve(game.applyDamageToOther(player, this.damage));
   }
 }
@@ -38,7 +51,6 @@ class TransformTile extends Effect {
         indicator.onclick = () => {
           $(indicator).addClass('choosed');
           if(!this.choosedTiles.includes(t)) this.choosedTiles.push(t);
-          console.log(this.choosedTiles)
           if(this.choosedTiles.length === this.quantity || this.choosedTiles.length === targetTile.length) {
             $(".indicator").remove();
             $("#backdrop").hide();
@@ -50,6 +62,7 @@ class TransformTile extends Effect {
   }
 
   createEffect(game) {
+    super.createEffect();
     const directionArray = [
       [-1, 0],
       [1, 0],
@@ -89,5 +102,17 @@ class TransformTile extends Effect {
         });
       } else return Promise.resolve(true);
     }
+  }
+}
+
+class Regenerate extends Effect {
+  constructor({hp, ...rest}) {
+    super(rest);
+    this.hp = hp;
+  }
+
+  createEffect(game) {
+    super.createEffect();
+    super.dispatch = ({player}) => Promise.resolve(game.regenerate(player, this.hp));
   }
 }

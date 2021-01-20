@@ -121,10 +121,11 @@ class Regenerate extends Effect {
 }
 
 class Enhance extends Effect {
-  constructor({enhaceTarget, enhance, ...rest}) {
+  constructor({enhaceTarget, enhance, createSideEffect, ...rest}) {
     super(rest);
     this.enhaceTarget = enhaceTarget;
     this.enhance = enhance;
+    this.createSideEffect = createSideEffect;
   }
 
   appendToGame(tile, game) {
@@ -134,7 +135,9 @@ class Enhance extends Effect {
       game.clearEffect(effectIdx);
     };
     tile.clearEffect = clearEffect;
-
+    if (this.createSideEffect) {
+      this.sideEffect = this.createSideEffect({game, tile});       
+    }
   }
 
   createEffect(game) {

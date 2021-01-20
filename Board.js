@@ -14,7 +14,10 @@ class Tile {
       $(this.dom).attr('occupied', this.occupied === myId ? 'self' : 'other');
       $(this.dom).attr('effectTrigger', this.effect?.trigger || '');
     }
-    else $(this.dom).attr('occupied', null);
+    else {
+      $(this.dom).attr('occupied', null);
+      $(this.dom).attr('effectTrigger', null);       
+    }
   }
 }
 
@@ -88,7 +91,11 @@ class Board {
   }
 
   clearBoard() {
-    this.tiles.forEach(t => {t.occupied = '';});
+    this.tiles.forEach(t => {
+      t.occupied = '';
+      t.effect = null;
+      t.clearEffect = null;
+    });
     this.update();
   }
 
@@ -99,9 +106,8 @@ class Board {
       const damage = await check.reduce(async (acc, curr) => {
         const d = await curr.reduce(async (a, t) => {
           console.log(t);
-          if (t.effect?.trigger === 'onfill') {
+          if (t.effect?.trigger === 'onclear') {
             const result = await t.effect?.dispatch({player: this.game.getPlayerById(t.occupied)});
-            console.log(result)
             if (result) t.effect = null;
           } else if (t.effect?.trigger === 'exist') {
             t.clearEffect();

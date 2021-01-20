@@ -161,4 +161,16 @@ const CardsPool_2 = [
       enhance: (hp = 0) => hp + 1,
     }),
   },
+  {
+    group: '疫苗',
+    shape: '6-0-5-10-2-7-12',
+    effect: new Enhance({
+      name: '存在: 我方每次回復生命時，對敵方造成 1 點傷害。',
+      trigger: 'exist',
+      pivot: 6,
+      enhaceTarget: 'regenerate',
+      enhance: (hp = 0) => hp,
+      createSideEffect: ({game, tile}) => ((player) => game.applyDamageToOther(player, 1)),
+    }),
+  },
 ];

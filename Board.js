@@ -18,6 +18,12 @@ class Tile {
       $(this.dom).attr('occupied', null);
       $(this.dom).attr('effectTrigger', null);
     }
+
+    if(['exist', 'onclear'].includes(this.effect?.trigger)) {
+      $(this.dom).attr('title', this.effect.name);
+    } else {
+      $(this.dom).attr('title', null);
+    }
   }
 }
 
@@ -50,7 +56,9 @@ class Board {
         .filter(x => this.game.getPlayerById(x.tile.occupied) === player)
         .filter(x => x.constrain(card));
       enhance.forEach((item, i) => {
-        item.sideEffect(this.game.getPlayerById(item.tile.occupied));
+        item.sideEffect({
+          player:this.game.getPlayerById(item.tile.occupied),
+        });
       });
 
       arr.forEach((t) => {

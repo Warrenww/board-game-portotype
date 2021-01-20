@@ -92,8 +92,10 @@ class Game {
   switchPlayer() {
     const currentPlayer = this.players[this.currentPlayerIndex];
     currentPlayer.drawCards.splice(currentPlayer.drawCards.indexOf(this.selectedCard), 1);
-    while (currentPlayer.draw.length > 5) {
-      currentPlayer.draw.splice(randomIndex(currentPlayer.draw), 1);
+
+    console.log(currentPlayer.drawCards);
+    while (currentPlayer.drawCards.length > 5) {
+      currentPlayer.drawCards.splice(randomIndex(currentPlayer.drawCards), 1);
     }
 
     this.currentPlayerIndex = Number(!this.currentPlayerIndex);
@@ -120,7 +122,9 @@ class Game {
   regenerate(player, hp){
     const enhance = this.existEffects.filter(x => (x && x.enhaceTarget === 'regenerate'));
     player.hp += enhance.reduce((acc, curr) => {
-      if(curr.sideEffect) curr.sideEffect(this.getPlayerById(curr.tile.occupied));
+      if(curr.sideEffect) curr.sideEffect({
+        player: this.getPlayerById(curr.tile.occupied),
+      });
       return (player === this.getPlayerById(curr.tile.occupied) ? curr.enhance(acc) : acc);
     }, hp);
     this.update();
@@ -160,6 +164,7 @@ class Game {
     $("#sidebar").empty();
     cards.forEach((card, i) => {
       // const card = new Card(c);
+
       const display = card.render();
       const game = this;
 

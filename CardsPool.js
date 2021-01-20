@@ -77,14 +77,29 @@ const CardsPool_1 = [
   {
     group: '通用',
     shape: '6-1-2-3-5-8-9-11-12-13',
+    effect: new DrawCard({
+      name: '打出: 抽一張牌',
+      trigger: 'onplace',
+      n: 1,
+    })
   },
   {
     group: '通用',
     shape: '11-1-16-6-21-5-7-15-17',
+    effect: new DrawCard({
+      name: '打出: 抽一張牌',
+      trigger: 'onplace',
+      n: 1,
+    })
     },
   {
     group: '通用',
     shape: '7-2-3-4-10-11-12',
+    effect: new DrawCard({
+      name: '打出: 抽一張牌',
+      trigger: 'onplace',
+      n: 1,
+    })
   },
 ];
 
@@ -170,7 +185,7 @@ const CardsPool_2 = [
       pivot: 6,
       enhaceTarget: 'regenerate',
       enhance: (hp = 0) => hp,
-      createSideEffect: ({game}) => ((player) => game.applyDamageToOther(player, 1)),
+      createSideEffect: ({game}) => (({player}) => game.applyDamageToOther(player, 1)),
     }),
   },
   {
@@ -182,7 +197,7 @@ const CardsPool_2 = [
       pivot: 6,
       enhaceTarget: 'onplace',
       constrain: (card) => card.group === '疫苗',
-      createSideEffect: ({game}) => ((player) => game.regenerate(player, 1)),
+      createSideEffect: ({game}) => (({player}) => game.regenerate(player, 1)),
     }),
   },
   {

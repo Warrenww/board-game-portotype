@@ -11,7 +11,7 @@ class Effect {
     this.card = card;
   }
 
-  createEffect(card) {
+  createEffect() {
     if (
       this.trigger === 'onclear' ||
       this.trigger === 'exist'
@@ -29,7 +29,7 @@ class DamageOtherPlayer extends Effect {
 
   createEffect(game) {
     super.createEffect();
-      super.dispatch = ({player}) => Promise.resolve(game.applyDamageToOther(player, this.damage));
+      this.dispatch = ({player}) => Promise.resolve(game.applyDamageToOther(player, this.damage));
   }
 }
 
@@ -73,7 +73,7 @@ class TransformTile extends Effect {
       [0, -1],
     ];
 
-    super.dispatch = async({player, tileId, card, board, tiles}) => {
+    this.dispatch = async({player, tileId, card, board, tiles}) => {
       this.choosedTiles = [];
 
       const placedTiles = this.trigger === 'onplace'
@@ -121,7 +121,7 @@ class Regenerate extends Effect {
 
   createEffect(game) {
     super.createEffect();
-    super.dispatch = ({player, n}) => Promise.resolve(game.regenerate(player, (typeof this.hp === 'function' ? this.hp(n) : this.hp)));
+    this.dispatch = ({player, n}) => Promise.resolve(game.regenerate(player, (typeof this.hp === 'function' ? this.hp(n) : this.hp)));
   }
 }
 
@@ -148,6 +148,18 @@ class Enhance extends Effect {
 
   createEffect(game) {
     super.createEffect();
-    super.dispatch = () => {};
+    this.dispatch = () => {};
+  }
+}
+
+class DrawCard extends Effect {
+  constructor({n, ...rest}) {
+    super(rest);
+    this.n = n;
+  }
+
+  createEffect(game) {
+    super.createEffect();
+    this.dispatch = ({player}) => Promise.resolve(player.draw(this.n));
   }
 }

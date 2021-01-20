@@ -16,7 +16,10 @@ class Player {
   }
 
   draw(n = 1){
-    this.drawCards.push(this.cardsPool.pop());
+    while (n-- > 0 && this.cardsPool.length > 0) {
+      this.drawCards.push(this.cardsPool.pop());
+    }
+    return true;
   }
 
   update() {

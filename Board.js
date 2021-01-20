@@ -16,7 +16,7 @@ class Tile {
     }
     else {
       $(this.dom).attr('occupied', null);
-      $(this.dom).attr('effectTrigger', null);       
+      $(this.dom).attr('effectTrigger', null);
     }
   }
 }
@@ -45,6 +45,14 @@ class Board {
   async place(tileId, card, player) {
     const arr = card.relativeShape.map(x => x.add(new Vector(tileId)));
     if (arr.every(x => this.validateTile(x))) {
+      const enhance = this.game.existEffects
+        .filter(x => x.enhaceTarget === 'onplace')
+        .filter(x => this.game.getPlayerById(x.tile.occupied) === player)
+        .filter(x => x.constrain(card));
+      enhance.forEach((item, i) => {
+        item.sideEffect(this.game.getPlayerById(item.tile.occupied));
+      });
+
       arr.forEach((t) => {
         this.tiles[t.tileId].occupied = player.id;
         if (t.data?.effect) {
@@ -101,13 +109,15 @@ class Board {
 
   async updateMovement(player, card) {
     const check = this.checkFullStack();
-    console.log(check);
     if (check.length) {
       const damage = await check.reduce(async (acc, curr) => {
         const d = await curr.reduce(async (a, t) => {
-          console.log(t);
           if (t.effect?.trigger === 'onclear') {
-            const result = await t.effect?.dispatch({player: this.game.getPlayerById(t.occupied)});
+            const result = await t.effect?.dispatch({
+              player: this.game.getPlayerById(t.occupied),
+              tiles: curr.filter(x => x.effect?.trigger === 'onclear'),
+              board: this,
+            });
             if (result) t.effect = null;
           } else if (t.effect?.trigger === 'exist') {
             t.clearEffect();

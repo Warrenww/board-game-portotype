@@ -6,8 +6,8 @@ class Vector {
       this.y = parseInt(n / this.size);
     } else {
       const v = Array.from(n);
-      this.x = v[0];
-      this.y = v[1];
+      this.x = v.x || v[0];
+      this.y = v.y || v[1];
     }
   }
 

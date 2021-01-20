@@ -170,7 +170,30 @@ const CardsPool_2 = [
       pivot: 6,
       enhaceTarget: 'regenerate',
       enhance: (hp = 0) => hp,
-      createSideEffect: ({game, tile}) => ((player) => game.applyDamageToOther(player, 1)),
+      createSideEffect: ({game}) => ((player) => game.applyDamageToOther(player, 1)),
+    }),
+  },
+  {
+    group: '疫苗',
+    shape: '6-1-11-5-7',
+    effect: new Enhance({
+      name: '存在: 每當我方打出一張疫苗方塊，回復我方 1 點生命。',
+      trigger: 'exist',
+      pivot: 6,
+      enhaceTarget: 'onplace',
+      constrain: (card) => card.group === '疫苗',
+      createSideEffect: ({game}) => ((player) => game.regenerate(player, 1)),
+    }),
+  },
+  {
+    group: '疫苗',
+    shape: '6-5-7-8-2',
+    effect: new TransformTile({
+      name: '消除: 將相鄰且未被消除的所有方格，轉化為我方格。',
+      trigger: 'onclear',
+      pivot: 2,
+      target: 'adjacent',
+      method: 'all',
     }),
   },
 ];

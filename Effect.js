@@ -73,9 +73,12 @@ class TransformTile extends Effect {
       [0, -1],
     ];
 
-    super.dispatch = async({player, tileId, card, board}) => {
+    super.dispatch = async({player, tileId, card, board, tiles}) => {
       this.choosedTiles = [];
-      const placedTiles = card.relativeShape.map(x => x.add(new Vector(tileId)));
+
+      const placedTiles = this.trigger === 'onplace'
+        ? card.relativeShape.map(x => x.add(new Vector(tileId)))
+        : tiles.map(t => t.coord);
       const adjacentTiles = placedTiles.reduce((acc, curr) => {
         const adj = directionArray.map(x => (new Vector(x)).add(curr));
         adj.forEach((item, i) => {
@@ -97,6 +100,8 @@ class TransformTile extends Effect {
               const idx = parseInt(targetTile.length * Math.random());
               this.choosedTiles.push(targetTile.splice(idx, 1)[0]);
             }
+          } else if (this.method === 'all') {
+            this.choosedTiles = [...targetTile];
           }
           this.choosedTiles.forEach((t, i) => {
             game.transformTile(t, board);
@@ -121,11 +126,12 @@ class Regenerate extends Effect {
 }
 
 class Enhance extends Effect {
-  constructor({enhaceTarget, enhance, createSideEffect, ...rest}) {
+  constructor({enhaceTarget, enhance, createSideEffect, constrain, ...rest}) {
     super(rest);
     this.enhaceTarget = enhaceTarget;
     this.enhance = enhance;
     this.createSideEffect = createSideEffect;
+    this.constrain = constrain;
   }
 
   appendToGame(tile, game) {
@@ -136,7 +142,7 @@ class Enhance extends Effect {
     };
     tile.clearEffect = clearEffect;
     if (this.createSideEffect) {
-      this.sideEffect = this.createSideEffect({game, tile});       
+      this.sideEffect = this.createSideEffect({game, tile});
     }
   }
 

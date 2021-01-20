@@ -83,11 +83,22 @@ class Board {
 
   highlight(tileId, card) {
     const arr = card.relativeShape.map(x => x.add(new Vector(tileId)));
-    arr.filter(x => this.validateTile(x)).forEach((t) => { $(this.tiles[t.tileId].dom).addClass('highlight'); });
+    const availible = arr.filter(x => this.validateTile(x));
+    availible.forEach((t) => {
+      $(this.tiles[t.tileId].dom).addClass('highlight');
+      if (availible.length !== arr.length) {
+        $(this.tiles[t.tileId].dom).attr('invalid', 'true');
+      } else {
+        $(this.tiles[t.tileId].dom).attr('invalid', null);         
+      }
+    });
   }
 
   deHighlight() {
-    this.tiles.forEach((t) => { $(t.dom).removeClass('highlight'); });
+    this.tiles.forEach((t) => {
+      $(t.dom).removeClass('highlight');
+      $(this.dom).attr('invalid', null);
+    });
   }
 
   getRow(i) { return [0, 1, 2, 3, 4, 5].map(x => this.tiles[x + i * 6]); }

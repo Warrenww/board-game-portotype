@@ -59,10 +59,29 @@ button:hover {
 
 #board .tile {
   border: 1px solid #ccc;
+  position: relative;
 }
 #board .tile:hover,
 #board .tile.highlight
  { background: #aaa5; }
+ #board .tile.highlight[invalid]::before,
+ #board .tile.highlight[invalid]::after
+ {
+   content: '';
+   width: 100%;
+   height: 3px;
+   background-color: #da4647;
+   display: block;
+   transform: rotate(45deg) translateY(50%) scale(.5);
+   opacity: .5;
+   transform-origin: center;
+   top: 50%;
+   position: absolute;
+}
+#board .tile.highlight[invalid]::after {
+  transform: rotate(-45deg) translateY(50%) scale(.5);
+}
+
 #board .tile[occupied="self"] { background: #42b4bf55; }
 #board .tile[occupied="other"] { background: #af514b55; }
 #board .tile[effectTrigger]::after {

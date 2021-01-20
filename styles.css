@@ -65,26 +65,34 @@ button:hover {
  { background: #aaa5; }
 #board .tile[occupied="self"] { background: #42b4bf55; }
 #board .tile[occupied="other"] { background: #af514b55; }
-#board .tile[effectTrigger="onclear"]::after {
-  content: "";
+#board .tile[effectTrigger]::after {
   width: 100%;
   height: 100%;
   display: block;
   opacity: .5;
   background: linear-gradient(
     45deg,
-    #fee348 0% 10%,
+    var(--color) 0% 10%,
     transparent 10% 20%,
-    #fee348 20% 30%,
+    var(--color) 20% 30%,
     transparent 30% 40%,
-    #fee348 40% 50%,
+    var(--color) 40% 50%,
     transparent 50% 60%,
-    #fee348 60% 70%,
+    var(--color) 60% 70%,
     transparent 70% 80%,
-    #fee348 80% 90%,
+    var(--color) 80% 90%,
     transparent 90% 100%
   );
 }
+#board .tile[effectTrigger="onclear"]::after {
+  content: "";
+  --color: #fee348;
+}
+#board .tile[effectTrigger="exist"]::after {
+  content: "";
+  --color: #48c7fe;
+}
+
 
 
 #cardsPool {

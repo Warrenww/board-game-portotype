@@ -35,6 +35,7 @@ class Game {
     this.currentPlayerIndex = 0;
     this.cardsPool = [];
     this.selectedCard = null;
+    this.existEffects = [];
 
     this.players[0] = new Player({
       id: 0,
@@ -99,8 +100,23 @@ class Game {
   }
 
   regenerate(player, hp){
-    player.hp += hp;
+    const enhance = this.existEffects.filter(x => x.enhaceTarget === 'regenerate');
+    console.log(this.existEffects)
+    console.log(enhance);
+    player.hp += enhance.reduce((acc, curr) => {
+      return (player === this.getPlayerById(curr.tile.occupied) ? curr.enhance(acc) : acc);
+    }, hp);
     this.update();
+    return true;
+  }
+
+  addExistEffect(effect) {
+    this.existEffects.push(effect);
+    return this.existEffects.length - 1;
+  }
+
+  clearEffect(idx) {
+    this.existEffects[idx] = null;
     return true;
   }
 

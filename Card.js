@@ -13,7 +13,10 @@ class Card {
   get relativeShape() {
     const temp = this.shape.split('-').map(x => new Vector(parseInt(x), 5));
     const vec = temp.map(x => x.sub(temp[0]));
-    if(this.effect?.trigger === 'onclear') return vec.map((x, i) => (i === this.pivotIdx ? Vector.applyData(x, {effect: this.effect}) : x));
+    if(
+      this.effect?.trigger === 'onclear' ||
+      this.effect?.trigger === 'exist'
+    ) return vec.map((x, i) => (i === this.pivotIdx ? Vector.applyData(x, {effect: this.effect}) : x));
     return vec;
   }
 

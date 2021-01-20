@@ -150,4 +150,15 @@ const CardsPool_2 = [
       hp: (n = 0) => n * 2,
     }),
   },
+  {
+    group: '疫苗',
+    shape: '6-5-1-11-12',
+    effect: new Enhance({
+      name: '存在: 我方每次回復生命時，額外回復 1 點。',
+      trigger: 'exist',
+      pivot: 6,
+      enhaceTarget: 'regenerate',
+      enhance: (hp = 0) => hp + 1,
+    }),
+  },
 ];

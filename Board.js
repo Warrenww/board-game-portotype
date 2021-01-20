@@ -52,6 +52,9 @@ class Board {
       if(card.effect?.trigger === 'onplace') {
         await card.effect.dispatch({player, tileId, card, board: this});
       }
+      if(card.effect?.trigger === 'exist') {
+        card.effect.appendToGame(this.getTile(arr[card.pivotIdx]), this.game);
+      }
       return Promise.resolve(true);
     } else {
       return Promise.reject('Invalid step');
@@ -95,8 +98,15 @@ class Board {
     if (check.length) {
       const damage = await check.reduce(async (acc, curr) => {
         const d = await curr.reduce(async (a, t) => {
-          const result = await t.effect?.dispatch({player: this.game.getPlayerById(t.occupied)});
-          if (result) t.effect = null;
+          console.log(t);
+          if (t.effect?.trigger === 'onfill') {
+            const result = await t.effect?.dispatch({player: this.game.getPlayerById(t.occupied)});
+            console.log(result)
+            if (result) t.effect = null;
+          } else if (t.effect?.trigger === 'exist') {
+            t.clearEffect();
+            t.effect = null;
+          }
           t.render();
           const tmp = await a + (t.occupied === player.id ? 1 : 0);
           t.occupied = '';

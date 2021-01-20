@@ -12,7 +12,10 @@ class Effect {
   }
 
   createEffect(card) {
-    if (this.trigger === 'onclear') {
+    if (
+      this.trigger === 'onclear' ||
+      this.trigger === 'exist'
+    ) {
       this.card.pivotIdx = this.card.shape.split('-').map(x => parseInt(x)).indexOf(this.pivotIdx);
     }
   }
@@ -114,5 +117,28 @@ class Regenerate extends Effect {
   createEffect(game) {
     super.createEffect();
     super.dispatch = ({player, n}) => Promise.resolve(game.regenerate(player, (typeof this.hp === 'function' ? this.hp(n) : this.hp)));
+  }
+}
+
+class Enhance extends Effect {
+  constructor({enhaceTarget, enhance, ...rest}) {
+    super(rest);
+    this.enhaceTarget = enhaceTarget;
+    this.enhance = enhance;
+  }
+
+  appendToGame(tile, game) {
+    const effectIdx = game.addExistEffect(this);
+    this.tile = tile;
+    const clearEffect = () => {
+      game.clearEffect(effectIdx);
+    };
+    tile.clearEffect = clearEffect;
+
+  }
+
+  createEffect(game) {
+    super.createEffect();
+    super.dispatch = () => {};
   }
 }

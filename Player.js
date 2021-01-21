@@ -6,6 +6,7 @@ class Player {
     this.infoDiv = document.createElement('div');
     this.cardsPool = [];
     this.drawCards = [];
+    this.skipTimes = 0;
 
     this.infoDiv.className = 'player-info' + (this.id === myId ? ' player' : '');
   }

@@ -38,6 +38,20 @@ class Board {
       this.tiles.push(new Tile(i));
       this.dom.append(this.tiles[i].dom);
     }
+
+    this.skipBtn = document.createElement('button');
+    document.body.appendChild(this.skipBtn);
+    this.skipBtn.id = 'skip';
+    this.skipBtn.innerText = 'Skip';
+    this.skipBtn.onclick = () => this.skip();
+  }
+
+  skip() {
+    this.game.selectedCard = null;
+    const clear = this.game.skip();
+    console.log(clear);
+    if (clear) this.clearBoard();
+    this.update();
   }
 
   getTile({x, y}) { return this.tiles.find(t => t.coord.equal(new Vector([x, y]))); }
@@ -67,13 +81,15 @@ class Board {
           this.tiles[t.tileId].effect = t.data.effect;
         }
       });
+      this.update();
       if(card.effect?.trigger === 'exist') {
         card.effect.appendToGame(this.getTile(arr[card.pivotIdx]), this.game);
       }
-      this.updateMovement(player, card);
+      this.game.skippedPlayer = null;
       if(card.effect?.trigger === 'onplace') {
         await card.effect.dispatch({player, tileId, card, board: this});
       }
+      this.updateMovement(player, card);
       player.draw();
       return Promise.resolve(true);
     } else {
@@ -89,7 +105,7 @@ class Board {
       if (availible.length !== arr.length) {
         $(this.tiles[t.tileId].dom).attr('invalid', 'true');
       } else {
-        $(this.tiles[t.tileId].dom).attr('invalid', null);         
+        $(this.tiles[t.tileId].dom).attr('invalid', null);
       }
     });
   }
@@ -133,11 +149,13 @@ class Board {
       const damage = await check.reduce(async (acc, curr) => {
         const d = await curr.reduce(async (a, t) => {
           if (t.effect?.trigger === 'onclear') {
+            console.log(t.effect);
             const result = await t.effect?.dispatch({
               player: this.game.getPlayerById(t.occupied),
               tiles: curr.filter(x => x.effect?.trigger === 'onclear'),
               board: this,
             });
+            console.log(result);
             if (result) t.effect = null;
           } else if (t.effect?.trigger === 'exist') {
             t.clearEffect();
@@ -160,6 +178,7 @@ class Board {
   }
 
   update() {
+    $(this.skipBtn).attr('safe', this.game.skippedPlayer !== null);
     this.tiles.forEach((t) => t.render());
   }
 }

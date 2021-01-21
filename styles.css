@@ -24,6 +24,17 @@ button:hover {
   box-shadow: 0px 0px 5px ;
 }
 
+#skip {
+  position: fixed;
+  right: 1em;
+  bottom: 1em;
+  width: 5em;
+  height: 5em;
+  border-radius: 50%;
+  background-color:#d56f6f;
+}
+#skip[safe="true"] { background-color: #77b84e }
+
 #control {
   display: flex;
   justify-content: center;

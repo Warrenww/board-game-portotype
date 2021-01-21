@@ -5,6 +5,7 @@ class Game {
     this.cardsPool = [];
     this.selectedCard = null;
     this.existEffects = [];
+    this.skippedPlayer = null;
 
     this.players[0] = new Player({
       id: 0,
@@ -17,6 +18,18 @@ class Game {
       name: 'player 2',
     });
     this.playersInitCardsPool();
+  }
+
+  skip() {
+    if (this.skippedPlayer === null) {
+      this.skippedPlayer = this.currentPlayerIndex;
+      const currentPlayer = this.players[this.currentPlayerIndex];
+      currentPlayer.applyDamage(++currentPlayer.skipTimes);
+    } else {
+      this.skippedPlayer = null
+    }
+    this.switchPlayer();
+    return this.skippedPlayer === null;
   }
 
   async playersInitCardsPool() {
@@ -91,9 +104,11 @@ class Game {
 
   switchPlayer() {
     const currentPlayer = this.players[this.currentPlayerIndex];
-    currentPlayer.drawCards.splice(currentPlayer.drawCards.indexOf(this.selectedCard), 1);
+    const cardIdx = currentPlayer.drawCards.indexOf(this.selectedCard);
+    if (cardIdx !== -1) {
+      currentPlayer.drawCards.splice(cardIdx, 1);
+    }
 
-    console.log(currentPlayer.drawCards);
     while (currentPlayer.drawCards.length > 5) {
       currentPlayer.drawCards.splice(randomIndex(currentPlayer.drawCards), 1);
     }
@@ -121,12 +136,13 @@ class Game {
 
   regenerate(player, hp){
     const enhance = this.existEffects.filter(x => (x && x.enhaceTarget === 'regenerate'));
-    player.hp += enhance.reduce((acc, curr) => {
+    const finalValue = enhance.reduce((acc, curr) => {
       if(curr.sideEffect) curr.sideEffect({
         player: this.getPlayerById(curr.tile.occupied),
       });
       return (player === this.getPlayerById(curr.tile.occupied) ? curr.enhance(acc) : acc);
     }, hp);
+    player.hp += finalValue;
     this.update();
     return true;
   }

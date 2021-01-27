@@ -1,33 +1,67 @@
 import React from 'react';
-import { useState, useEffect } from "react";
-// import { io } from 'socket.io-client';
+import { useState, useEffect, useCallback } from "react";
 import { AppContainer } from './Components/styles';
 import Board from './Components/Board';
-import JoinRoomModal from './Components/JoinRoomModal';
+import GameInfo from './Components/GameInfo';
+import JoinGameModal from './Components/JoinGameModal';
+import { message } from 'antd';
+import postData from './postData';
 
 const App = () => {
   const [socket, setSocket] = useState(null);
-  const [roomId, setRoomId] = useState(null);
+  const [socketId, setSocketId] = useState(null);
+  const [playerName, setPlayerName] = useState('');
+  const [gameId, setGameId] = useState(null);
 
-  useEffect(() => {
-    const socket = io('http://localhost:8000'); // eslint-disable-line
-    setSocket(socket);
-
-    socket.on('message', msg => alert(msg));
+  const Alert = useCallback(({
+    content = '',
+    severity = 'info',
+    duration = 5,
+    next,
+  }) => {
+    if (!['info', 'warning', 'error', 'success', 'loading'].includes(severity)) severity = 'info';
+    message[severity](content, duration).then(next);
   }, []);
 
-  const handleOk = () => {
-    socket.emit('join room', 'test');
-    setRoomId(10);
+  useEffect(() => {
+    if (gameId) {
+      const webSocket = io(`/${gameId}`); // eslint-disable-line
+      setSocket(webSocket);
+    }
+  }, [gameId]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('connect', () => {
+        setSocketId(socket.id);
+        socket.emit('join game', playerName);
+      });
+      socket.on('message', Alert);
+      socket.on('Join game failed', () => setGameId(null));
+    }
+  }, [socket, playerName, Alert]);
+
+  const handleJoinGame = async (value) => {
+    const { success, error ,gameId } = await postData('/api/join-game', value);
+    setPlayerName(value.playerName);
+    if (success) {
+      console.log(gameId);
+      setGameId(gameId);
+    } else {
+      Alert({
+        content: error,
+        severity: 'error',
+      });
+    }
   }
 
   return (
     <AppContainer>
+      <GameInfo gameId={gameId}/>
       <Board />
-      <JoinRoomModal
-        show={roomId === null}
-        handleOk={handleOk}
-        handleCancel={() => setRoomId(10)}
+      <JoinGameModal
+        show={gameId === null}
+        onSubmit={handleJoinGame}
       />
     </AppContainer>
   );

@@ -6,6 +6,13 @@ import GameInfo from './Components/GameInfo';
 import JoinGameModal from './Components/JoinGameModal';
 import { message } from 'antd';
 import postData from './postData';
+import EventName from './const/socketEvent';
+const {
+  PLAYER_JOIN,
+  PLAYER_JOIN_FAILED,
+  CONNECT,
+  MESSAGE,
+} = EventName;
 
 const App = () => {
   const [socket, setSocket] = useState(null);
@@ -32,12 +39,12 @@ const App = () => {
 
   useEffect(() => {
     if (socket) {
-      socket.on('connect', () => {
+      socket.on(CONNECT, () => {
         setSocketId(socket.id);
-        socket.emit('join game', playerName);
+        socket.emit(PLAYER_JOIN, playerName);
       });
-      socket.on('message', Alert);
-      socket.on('Join game failed', () => setGameId(null));
+      socket.on(MESSAGE, Alert);
+      socket.on(PLAYER_JOIN_FAILED, () => setGameId(null));
     }
   }, [socket, playerName, Alert]);
 
@@ -45,7 +52,7 @@ const App = () => {
     const { success, error ,gameId } = await postData('/api/join-game', value);
     setPlayerName(value.playerName);
     if (success) {
-      console.log(gameId);
+      // console.log(gameId);
       setGameId(gameId);
     } else {
       Alert({
@@ -57,7 +64,7 @@ const App = () => {
 
   return (
     <AppContainer>
-      <GameInfo gameId={gameId}/>
+      <GameInfo gameId={gameId} socket={socket}/>
       <Board />
       <JoinGameModal
         show={gameId === null}

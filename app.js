@@ -26,8 +26,6 @@ const Games = [];
 io.on("connection", (socket) => {
   console.log(socket.id, 'connect');
 
-  socket.on('join game', data => console.log(data, 'not here'));
-
   socket.on("disconnect", () => {
     console.log("Client disconnected");
   });

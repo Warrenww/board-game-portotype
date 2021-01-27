@@ -1,5 +1,12 @@
 import { uuidv4 } from '../utils';
 import Player from './Player';
+import EventName from '../src/const/socketEvent';
+const {
+  PLAYER_JOIN,
+  PLAYER_JOIN_FAILED,
+  MESSAGE,
+  UPDATE_PLAYERS,
+} = EventName;
 
 export default class Game {
   constructor(gameId, io) {
@@ -13,21 +20,21 @@ export default class Game {
 
   bindSocketEvents() {
     this.io.on('connection', socket => {
-      // console.log(socket.id, 'try ro joined', this.id);
+      console.log(socket.id, 'try ro joined', this.id);
 
-      socket.on('join game', playerName => {
-        // console.log(data);
+      socket.on(PLAYER_JOIN, playerName => {
         const player = new Player(playerName, socket.id);
         if (this.players.length >= 2) {
-          socket.emit('Join game failed');
-          socket.emit('message', {
+          socket.emit(PLAYER_JOIN_FAILED);
+          socket.emit(MESSAGE, {
             content: 'Too many players',
             severity: 'error',
           });
           return ;
         }
         this.players.push(player);
-        socket.broadcast.emit('message', {
+        this.io.emit(UPDATE_PLAYERS, this.players);
+        socket.broadcast.emit(MESSAGE, {
           content: `${player.name} join the game`,
           severity: 'success',
         });

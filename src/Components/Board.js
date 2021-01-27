@@ -1,12 +1,11 @@
-import { useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { StyledBoard } from './styles';
 
-export const Board = () => {
+const Board = () => {
   const canvasRef = useRef();
   const boardRef = useRef();
   const config = {
     grid: 6,
-    unit: 100,
   };
 
   useEffect(() => {
@@ -34,3 +33,5 @@ export const Board = () => {
     </StyledBoard>
   )
 }
+
+export default Board;

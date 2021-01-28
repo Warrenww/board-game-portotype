@@ -15,7 +15,7 @@ const PlayerInfo = ({data}) => {
   const { name } = data;
   return (
     <Col xs={8}>
-      <Title level={4}>{name}</Title>
+      <Title level={4}>{name || '-'}</Title>
       <Paragraph>hp: {30}</Paragraph>
     </Col>
   )

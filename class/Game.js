@@ -1,5 +1,6 @@
 import { uuidv4 } from '../utils';
 import Player from './Player';
+import Board from './Board';
 import EventName from '../src/const/socketEvent';
 const {
   PLAYER_JOIN,
@@ -13,7 +14,7 @@ export default class Game {
     this.id = gameId;
     this.io = io.of(`/${gameId}`);
     this.players = [];
-
+    this.board = new Board(this);
 
     this.bindSocketEvents();
   }

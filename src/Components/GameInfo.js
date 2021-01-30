@@ -12,11 +12,11 @@ const {
 const { Paragraph, Title } = Typography;
 
 const PlayerInfo = ({data}) => {
-  const { name } = data;
+  const { name, hp } = data;
   return (
     <Col xs={8}>
       <Title level={4}>{name || '-'}</Title>
-      <Paragraph>hp: {30}</Paragraph>
+      <Paragraph>hp: {hp}</Paragraph>
     </Col>
   )
 }

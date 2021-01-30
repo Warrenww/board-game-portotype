@@ -4,6 +4,7 @@ const EventName = {
   'MESSAGE': 'message',
   'CONNECT': 'connect',
   'UPDATE_PLAYERS': 'update players',
+  'UPDATE_CARD_POOLS': 'update cardPools',
 };
 
 export default EventName;

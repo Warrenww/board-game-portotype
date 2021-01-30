@@ -1,5 +1,10 @@
 import styled from 'styled-components';
-import { Row } from 'antd';
+import {
+  Row,
+  Drawer,
+  Button,
+  Card
+} from 'antd';
 import { BOARD_BOARDER } from '../const/boardConfig';
 
 export const AppContainer = styled.div`
@@ -45,5 +50,33 @@ export const StyledTile = styled.div`
 
   &:hover {
     background: #fff5;
+  }
+`;
+
+export const StyledCardsDisplay = styled(Drawer)`
+  & .ant-card {
+    margin: 1em;
+  }
+`;
+
+export const ShowCardsButton = styled(Button)`
+  &.ant-btn {
+    position: fixed;
+    bottom: 2em;
+    left: 2em;
+    width: 3em;
+    height: 3em;
+  }
+  & svg {
+    height: 60%;
+    width: 60%;
+  }
+`;
+
+export const StyledCardDisplay = styled(Card)`
+  & canvas {
+    width: 50px;
+    margin: 0 auto;
+    margin-top: 1em;
   }
 `;

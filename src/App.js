@@ -3,22 +3,25 @@ import { useState, useEffect, useCallback } from "react";
 import { AppContainer } from './Components/styles';
 import Board from './Components/Board';
 import GameInfo from './Components/GameInfo';
+import CardsDisplay from './Components/CardsDisplay';
 import JoinGameModal from './Components/JoinGameModal';
 import { message } from 'antd';
 import postData from './postData';
 import EventName from './const/socketEvent';
+
 const {
   PLAYER_JOIN,
   PLAYER_JOIN_FAILED,
   CONNECT,
   MESSAGE,
+  UPDATE_CARD_POOLS,
 } = EventName;
 
 const App = () => {
   const [socket, setSocket] = useState(null);
-  const [socketId, setSocketId] = useState(null);
   const [playerName, setPlayerName] = useState('');
   const [gameId, setGameId] = useState(null);
+  const [cards, setCards] = useState([]);
 
   const Alert = useCallback(({
     content = '',
@@ -40,11 +43,11 @@ const App = () => {
   useEffect(() => {
     if (socket) {
       socket.on(CONNECT, () => {
-        setSocketId(socket.id);
         socket.emit(PLAYER_JOIN, playerName);
       });
       socket.on(MESSAGE, Alert);
       socket.on(PLAYER_JOIN_FAILED, () => setGameId(null));
+      socket.on(UPDATE_CARD_POOLS, cards => setCards(cards));
     }
   }, [socket, playerName, Alert]);
 
@@ -70,6 +73,7 @@ const App = () => {
         show={gameId === null}
         onSubmit={handleJoinGame}
       />
+      <CardsDisplay cards={cards}/>
     </AppContainer>
   );
 }

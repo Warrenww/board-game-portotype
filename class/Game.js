@@ -24,7 +24,8 @@ export default class Game {
       console.log(socket.id, 'try ro joined', this.id);
 
       socket.on(PLAYER_JOIN, playerName => {
-        const player = new Player(playerName, socket.id);
+        const player = new Player(playerName, socket);
+
         if (this.players.length >= 2) {
           socket.emit(PLAYER_JOIN_FAILED);
           socket.emit(MESSAGE, {
@@ -33,18 +34,16 @@ export default class Game {
           });
           return ;
         }
+
         this.players.push(player);
-        this.io.emit(UPDATE_PLAYERS, this.players);
+        player.updateCardPools();;
+        this.io.emit(UPDATE_PLAYERS, this.players.map(p => p.publicData));
         socket.broadcast.emit(MESSAGE, {
           content: `${player.name} join the game`,
           severity: 'success',
         });
       });
     });
-
-  }
-
-  async join(playerName, socketId){
 
   }
 

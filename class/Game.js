@@ -14,7 +14,7 @@ export default class Game {
     this.id = gameId;
     this.io = io.of(`/${gameId}`);
     this.players = [];
-    this.board = new Board(this);
+    this.board = new Board({game:this});
 
     this.bindSocketEvents();
   }
@@ -36,12 +36,14 @@ export default class Game {
         }
 
         this.players.push(player);
-        player.updateCardPools();;
-        this.io.emit(UPDATE_PLAYERS, this.players.map(p => p.publicData));
         socket.broadcast.emit(MESSAGE, {
           content: `${player.name} join the game`,
           severity: 'success',
         });
+        player.updateCardPools();
+        this.io.emit(UPDATE_PLAYERS, this.players.map(p => p.publicData));
+
+        this.board.SendBoardToClient();
       });
     });
 

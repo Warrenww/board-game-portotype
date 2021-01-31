@@ -1,7 +1,30 @@
 export default class Crad {
   constructor({group, shape}) {
+    this.validateShape(shape);
     this.group = group;
     this.shape = shape;
+  }
+
+  get relativeShape() {
+    const size = Math.sqrt(this.shape.length);
+    return this.shape.split('').reduce((acc, curr, index) => {
+      if (Number(curr)) {
+        acc.push({
+          x: index % size - parseInt(size / 2),
+          y: parseInt(index / size) - parseInt(size / 2),
+        });
+      }
+      return acc;
+    }, []);
+
+  }
+
+  validateShape(shape) {
+    if(Number.isInteger(Math.sqrt(shape.length))) {
+        return true;
+    } else {
+      throw new Error('Shape must be square');
+    }
   }
 
   static createImg(card, dom, imgSize = 100) {

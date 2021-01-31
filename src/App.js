@@ -1,11 +1,15 @@
 import React from 'react';
 import { useState, useEffect, useCallback } from "react";
 import { AppContainer } from './Components/styles';
-import Board from './Components/Board';
+import BoardDisplay
+  from './Components/BoardDisplay'
+  ;
 import GameInfo from './Components/GameInfo';
 import CardsDisplay from './Components/CardsDisplay';
 import JoinGameModal from './Components/JoinGameModal';
 import { message } from 'antd';
+import Card from '../class/Card';
+import Board from '../class/Board';
 import postData from './postData';
 import EventName from './const/socketEvent';
 
@@ -15,6 +19,7 @@ const {
   CONNECT,
   MESSAGE,
   UPDATE_CARD_POOLS,
+  UPDATE_BOARD,
 } = EventName;
 
 const App = () => {
@@ -22,6 +27,8 @@ const App = () => {
   const [playerName, setPlayerName] = useState('');
   const [gameId, setGameId] = useState(null);
   const [cards, setCards] = useState([]);
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [board, setBoard] = useState(null);
 
   const Alert = useCallback(({
     content = '',
@@ -47,7 +54,8 @@ const App = () => {
       });
       socket.on(MESSAGE, Alert);
       socket.on(PLAYER_JOIN_FAILED, () => setGameId(null));
-      socket.on(UPDATE_CARD_POOLS, cards => setCards(cards));
+      socket.on(UPDATE_CARD_POOLS, cards => setCards(cards.map(card => new Card(card))));
+      socket.on(UPDATE_BOARD, board => setBoard(new Board(board)));
     }
   }, [socket, playerName, Alert]);
 
@@ -67,13 +75,23 @@ const App = () => {
 
   return (
     <AppContainer>
-      <GameInfo gameId={gameId} socket={socket}/>
-      <Board />
+      <GameInfo
+        gameId={gameId}
+        socket={socket}
+      />
+      <BoardDisplay
+        board={board}
+        selectedCard={selectedCard}
+      />
       <JoinGameModal
         show={gameId === null}
         onSubmit={handleJoinGame}
       />
-      <CardsDisplay cards={cards}/>
+      <CardsDisplay
+        cards={cards}
+        setSelectedCard={setSelectedCard}
+        selectedCard={selectedCard}
+      />
     </AppContainer>
   );
 }

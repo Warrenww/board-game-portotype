@@ -43,14 +43,12 @@ export const GameInfoDiv = styled(Row)`
 
 export const StyledTile = styled.div`
   position: absolute;
-  top: ${(props) => props.x || 0}px;
-  left: ${(props) => props.y || 0}px;
+  top: ${(props) => props.y || 0}px;
+  left: ${(props) => props.x || 0}px;
   width: ${(props) => props.size || 0}px;
   height: ${(props) => props.size || 0}px;
 
-  &:hover {
-    background: #fff5;
-  }
+  background: ${(props) => props.highlight ? (props.valid ? '#fff3' : '#d9686833') : 'transparent'};
 `;
 
 export const StyledCardsDisplay = styled(Drawer)`
@@ -74,6 +72,11 @@ export const ShowCardsButton = styled(Button)`
 `;
 
 export const StyledCardDisplay = styled(Card)`
+  box-shadow: ${(props) => props.active ? '0 0 10px 5px' : ''};
+
+  &:hover {
+    box-shadow: 0 0 10px 5px;
+  }
   & canvas {
     width: 50px;
     margin: 0 auto;

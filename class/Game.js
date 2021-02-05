@@ -7,6 +7,7 @@ const {
   PLAYER_JOIN_FAILED,
   MESSAGE,
   UPDATE_PLAYERS,
+  PLACE_TILE,
 } = EventName;
 
 export default class Game {
@@ -15,6 +16,7 @@ export default class Game {
     this.io = io.of(`/${gameId}`);
     this.players = [];
     this.board = new Board({game:this});
+    this.currentPlayer = null;
 
     this.bindSocketEvents();
   }
@@ -23,30 +25,47 @@ export default class Game {
     this.io.on('connection', socket => {
       console.log(socket.id, 'try ro joined', this.id);
 
-      socket.on(PLAYER_JOIN, playerName => {
-        const player = new Player(playerName, socket);
-
-        if (this.players.length >= 2) {
-          socket.emit(PLAYER_JOIN_FAILED);
+      socket.on(PLAYER_JOIN, playerName => this.playerJoin(socket, playerName));
+      socket.on(PLACE_TILE, async ({ tile, selectedCard }) => {
+        const player = this.getPlayerById(socket.id);
+        try {
+          await this.board.place({player, tile, selectedCard});
+        } catch (err) {
+          console.log(err);
           socket.emit(MESSAGE, {
-            content: 'Too many players',
+            content: err.toString(),
             severity: 'error',
           });
-          return ;
         }
 
-        this.players.push(player);
-        socket.broadcast.emit(MESSAGE, {
-          content: `${player.name} join the game`,
-          severity: 'success',
-        });
-        player.updateCardPools();
-        this.io.emit(UPDATE_PLAYERS, this.players.map(p => p.publicData));
-
-        this.board.SendBoardToClient();
       });
     });
 
+  }
+
+  playerJoin(socket, playerName) {
+    if (this.players.length >= 2) {
+      socket.emit(PLAYER_JOIN_FAILED);
+      socket.emit(MESSAGE, {
+        content: 'Too many players',
+        severity: 'error',
+      });
+      return ;
+    }
+    const player = new Player(playerName, socket);
+
+    this.players.push(player);
+    socket.broadcast.emit(MESSAGE, {
+      content: `${player.name} join the game`,
+      severity: 'success',
+    });
+    player.updateCardPools();
+    this.io.emit(UPDATE_PLAYERS, this.players.map(p => p.publicData));
+
+    this.board.SendBoardToClient();
+  }
+  getPlayerById(id) {
+    return this.players.find(p => p.id === id);
   }
 
   static CreateGame(io) {

@@ -1,8 +1,15 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, memo, useCallback } from 'react';
 import { StyledBoard,StyledTile } from './styles';
 import { BOARD_SIZE, BOARD_BOARDER } from '../const/boardConfig';
+import EventName from '../const/socketEvent';
 
-const BoardDisplay = ({ board, selectedCard }) => {
+const {
+  PLACE_TILE,
+} = EventName;
+
+const Tile = memo((props) => <StyledTile {...props} />)
+
+const BoardDisplay = ({ board, selectedCard, socket }) => {
   const canvasRef = useRef();
   const boardRef = useRef();
   const [boardWidth, setBoardWidth] = useState(0);
@@ -11,15 +18,17 @@ const BoardDisplay = ({ board, selectedCard }) => {
   const [highlight, setHighlight] = useState([]);
   const [validPlacement, setValidPlacement] = useState(true);
 
-  useEffect(() => {
-    console.log(board);
-    console.log(selectedCard);
-  }, [board, selectedCard]);
+
+  const handlePlace = useCallback((tile) => {
+    if (selectedCard) {
+      socket.emit(PLACE_TILE, { tile, selectedCard });
+    }
+  }, [selectedCard, socket]);
 
   useEffect(() => {
     if (focusTile && selectedCard && board) {
       const result = board.pseudoPlace(focusTile, selectedCard);
-      setValidPlacement(result.valid);
+      setValidPlacement(selectedCard === null ? true : result.valid);
       setHighlight(result.tiles.map(t => t.index));
     } else {
       setHighlight([focusTile]);
@@ -27,15 +36,40 @@ const BoardDisplay = ({ board, selectedCard }) => {
   }, [focusTile, board, selectedCard]);
 
   useEffect(() => {
-    if (board) {
-      setTiles(board.tiles);
+    if (board && socket) {
+      console.table(boardWidth);
+      const displayTiles = board.tiles.map( t => {
+        const x = t.x * boardWidth / BOARD_SIZE;
+        const y = t.y * boardWidth / BOARD_SIZE;
+
+        return (
+          <Tile
+            x={x}
+            y={y}
+            size={boardWidth / BOARD_SIZE}
+            key={`${t.index}`}
+            onPointerEnter={() => setFocusTile(t.index)}
+            onPointerLeave={() => setFocusTile(null)}
+            onClick={() => handlePlace(t)}
+            highlight={highlight.includes(t.index)}
+            valid={validPlacement}
+            occupied={t.occupied ? (t.occupied === socket.id ? 'me' : 'other') : 'none'}
+          />
+        );
+      });
+      setTiles(displayTiles);
     }
-  }, [board]);
+  }, [board, boardWidth, handlePlace, setFocusTile, highlight, socket, validPlacement]);
 
   useEffect(() => {
-    if (boardRef) {
+    const handleResize = () => {
       const boardWidth = boardRef.current.getBoundingClientRect().width - 2 * BOARD_BOARDER;
       setBoardWidth(boardWidth);
+    };
+
+    if (boardRef) {
+      handleResize();
+      window.addEventListener("resize", handleResize);
     }
   }, [boardRef]);
 
@@ -61,25 +95,7 @@ const BoardDisplay = ({ board, selectedCard }) => {
   return (
     <StyledBoard ref={boardRef}>
       <canvas ref={canvasRef}/>
-      {
-        tiles.map( t => {
-          const x = t.x * boardWidth / BOARD_SIZE;
-          const y = t.y * boardWidth / BOARD_SIZE;
-
-          return (
-            <StyledTile
-              x={x}
-              y={y}
-              size={boardWidth / BOARD_SIZE}
-              key={`${t.index}`}
-              onPointerEnter={() => setFocusTile(t.index)}
-              onPointerLeave={() => setFocusTile(null)}
-              highlight={highlight.includes(t.index)}
-              valid={validPlacement}
-            />
-          );
-        })
-      }
+      { tiles }
     </StyledBoard>
   )
 }

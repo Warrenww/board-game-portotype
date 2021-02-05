@@ -53,7 +53,7 @@ const CardsDisplay = ({ cards, setSelectedCard, selectedCard }) => {
       >
         {
           cards.map((card, i) => (
-            <div onClick={() => setSelectedCard(card)}>
+            <div onClick={() => selectedCard === card ? setSelectedCard(null) : setSelectedCard(card)}>
               <CardDisplay
                 card={card}
                 key={i}

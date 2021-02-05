@@ -48,7 +48,21 @@ export const StyledTile = styled.div`
   width: ${(props) => props.size || 0}px;
   height: ${(props) => props.size || 0}px;
 
-  background: ${(props) => props.highlight ? (props.valid ? '#fff3' : '#d9686833') : 'transparent'};
+  background: ${ (props) => props.occupied === 'none' ?
+    'transparent' :
+    (props.occupied === 'me' ?
+      '#85aa72aa' :
+      '#d49c5faa'
+    )
+  };
+
+  &::after {
+    content: ${(props) => props.highlight ? '""' : ''};
+    background: ${(props) => props.highlight ? (props.valid ? '#fff3' : '#d9686833') : 'transparent'};
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
 `;
 
 export const StyledCardsDisplay = styled(Drawer)`

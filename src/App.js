@@ -54,8 +54,8 @@ const App = () => {
       });
       socket.on(MESSAGE, Alert);
       socket.on(PLAYER_JOIN_FAILED, () => setGameId(null));
-      socket.on(UPDATE_CARD_POOLS, cards => setCards(cards.map(card => new Card(card))));
-      socket.on(UPDATE_BOARD, board => setBoard(new Board(board)));
+      socket.on(UPDATE_CARD_POOLS, (cards) => setCards(cards.map(card => new Card(card))));
+      socket.on(UPDATE_BOARD, (b) => setBoard(new Board(b)));
     }
   }, [socket, playerName, Alert]);
 
@@ -82,6 +82,7 @@ const App = () => {
       <BoardDisplay
         board={board}
         selectedCard={selectedCard}
+        socket={socket}
       />
       <JoinGameModal
         show={gameId === null}

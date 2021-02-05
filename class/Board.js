@@ -1,5 +1,6 @@
 import { BOARD_SIZE } from '../src/const/boardConfig';
 import Tile from './Tile';
+import Card from './Card';
 import EventName from '../src/const/socketEvent';
 const {
   UPDATE_BOARD,
@@ -21,13 +22,22 @@ export default class Board {
     return false;
   }
 
-  pseudoPlace(tileId, card) {
-    const t = this.getTileByIndex(tileId);
+  pseudoPlace(tile, card) {
+    const t = Number(tile) ? this.getTileByIndex(tile) : this.getTileByCoord(tile);
     const coverTiles = card.relativeShape.map(({x, y}) => ({x: t.x + x, y: t.y + y}));
     return {
       valid: coverTiles.every(({x, y}) => this.validateTile({x, y})),
       tiles: coverTiles.filter(({x, y}) => this.validateTile({x, y})).map(({x, y}) => this.getTileByCoord({x, y})),
     };
+  }
+
+  place({ player, tile, selectedCard}) {
+    const result = this.pseudoPlace(tile, new Card(selectedCard));
+    if (!result.valid) {
+      return Promise.reject('Invalid placement.');
+    }
+    result.tiles.forEach(tile => tile.occupied = player.id);
+    this.SendBoardToClient();
   }
 
   get publicData() {

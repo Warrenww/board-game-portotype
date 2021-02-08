@@ -17,13 +17,14 @@ export default class Game {
     this.players = [];
     this.board = new Board({game:this});
     this.currentPlayer = null;
+    this.start = false;
 
     this.bindSocketEvents();
   }
 
   bindSocketEvents() {
     this.io.on('connection', socket => {
-      console.log(socket.id, 'try ro joined', this.id);
+      console.log(socket.id, 'try to joined', this.id);
 
       socket.on(PLAYER_JOIN, playerName => this.playerJoin(socket, playerName));
       socket.on(PLACE_TILE, async ({ tile, selectedCard }) => {
@@ -59,13 +60,33 @@ export default class Game {
       content: `${player.name} join the game`,
       severity: 'success',
     });
-    player.updateCardPools();
-    this.io.emit(UPDATE_PLAYERS, this.players.map(p => p.publicData));
-
-    this.board.SendBoardToClient();
+    if (this.players.length === 2) {
+      this.start = true;
+      this.currentPlayer = parseInt(Math.random() * 2);
+      this.players.forEach(p => p.updateCardPools());
+      this.board.SendBoardToClient();
+    }
+    this.sendPlayersToClient();
   }
+
+  switchPlayer() {
+    this.currentPlayer = ((this.currentPlayer + 1) % 2);
+    this.sendPlayersToClient();
+  }
+
+  checkIsCurrentPlayer(player) {
+    return player === this.players[this.currentPlayer];
+  }
+
   getPlayerById(id) {
     return this.players.find(p => p.id === id);
+  }
+
+  sendPlayersToClient() {
+    this.io.emit(UPDATE_PLAYERS, {
+      players: this.players.map(p => p.publicData),
+      currentPlayer: this.players[this.currentPlayer]?.id,
+    });
   }
 
   static CreateGame(io) {

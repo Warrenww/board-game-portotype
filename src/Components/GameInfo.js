@@ -3,7 +3,7 @@ import {
   Typography,
   Col,
 } from 'antd';
-import { GameInfoDiv } from './styles';
+import { GameInfoDiv, StyledPlayerInfo } from './styles';
 import EventName from '../const/socketEvent';
 
 const {
@@ -11,13 +11,13 @@ const {
 } = EventName;
 const { Paragraph, Title } = Typography;
 
-const PlayerInfo = ({data}) => {
+const PlayerInfo = ({data, currentPlayer}) => {
   const { name, hp } = data;
   return (
-    <Col xs={8}>
+    <StyledPlayerInfo xs={8} current={data.id === currentPlayer}>
       <Title level={4}>{name || '-'}</Title>
       <Paragraph>hp: {hp}</Paragraph>
-    </Col>
+    </StyledPlayerInfo>
   )
 }
 
@@ -26,21 +26,26 @@ const GameInfo = ({
   socket,
 }) => {
   const [players, setPlayers] = useState([]);
+const [currentPlayer, setCurrentPlayer] =useState(null);
 
   useEffect(() => {
     if (socket) {
-      socket.on(UPDATE_PLAYERS, players => setPlayers(players));
+      socket.on(UPDATE_PLAYERS, ({players, currentPlayer}) => {
+        setPlayers(players);
+        console.log(players, currentPlayer)
+        setCurrentPlayer(currentPlayer);
+      });
     }
   }, [socket]);
 
   return (
     <GameInfoDiv>
-      <PlayerInfo data={players.find(x => x.id === socket.id) || {}}/>
+      <PlayerInfo data={players.find(x => x.id === socket.id) || {}} currentPlayer={currentPlayer}/>
       <Col xs={8}>
         <Title level={5}>game Id</Title>
         <Paragraph copyable>{gameId}</Paragraph>
       </Col>
-      <PlayerInfo data={players.find(x => x.id !== socket.id) || {}}/>
+      <PlayerInfo data={players.find(x => x.id !== socket.id) || {}} currentPlayer={currentPlayer}/>
     </GameInfoDiv>
   );
 };

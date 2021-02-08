@@ -3,7 +3,8 @@ import {
   Row,
   Drawer,
   Button,
-  Card
+  Card,
+  Col,
 } from 'antd';
 import { BOARD_BOARDER } from '../const/boardConfig';
 
@@ -96,4 +97,10 @@ export const StyledCardDisplay = styled(Card)`
     margin: 0 auto;
     margin-top: 1em;
   }
+`;
+
+export const StyledPlayerInfo = styled(Col)`
+  border: 0.1em dashed ${props => props.current ? '#fff' : 'transparent'};
+  border-radius: 1em;
+  margin-bottom: 1em;
 `;

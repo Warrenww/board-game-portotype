@@ -32,12 +32,17 @@ export default class Board {
   }
 
   place({ player, tile, selectedCard}) {
+    if (!this.game.checkIsCurrentPlayer(player)) {
+      return Promise.reject('Not your turn');
+    }
+
     const result = this.pseudoPlace(tile, new Card(selectedCard));
     if (!result.valid) {
       return Promise.reject('Invalid placement.');
     }
     result.tiles.forEach(tile => tile.occupied = player.id);
     this.SendBoardToClient();
+    this.game.switchPlayer();
   }
 
   get publicData() {

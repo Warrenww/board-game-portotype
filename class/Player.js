@@ -15,6 +15,10 @@ export default class Player {
     this.cardPools = CardPools.map(x => new Card(x));
   }
 
+  applyDamage(damage) {
+    this.hp -= damage;
+  }
+
   get publicData() {
     return {
       name: this.name,

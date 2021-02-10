@@ -3,7 +3,7 @@ const webpackNodeExternals = require("webpack-node-externals");
 
 module.exports = {
   target: "node",
-  mode: "development",
+  mode: "production",
   entry: "./app.js",
   output: {
     filename: "bundle.js",

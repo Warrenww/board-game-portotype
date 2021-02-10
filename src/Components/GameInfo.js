@@ -32,7 +32,6 @@ const [currentPlayer, setCurrentPlayer] =useState(null);
     if (socket) {
       socket.on(UPDATE_PLAYERS, ({players, currentPlayer}) => {
         setPlayers(players);
-        console.log(players, currentPlayer)
         setCurrentPlayer(currentPlayer);
       });
     }

@@ -87,19 +87,20 @@ export default class Game {
   }
 
   applyDamageToOther(player, damage) {
-    const target = this.players.find(p => p.id === player.id);
+    const target = this.players.find(p => p.id !== player.id);
     target.applyDamage(damage);
     const endGame = this.checkEndGame();
     if (!endGame) this.sendPlayersToClient();
   }
 
   checkEndGame() {
-    const dead = this.players.every(p => p.hp <= 0);
+    const dead = this.players.find(p => p.hp <= 0);
     if (dead) {
       this.io.emit(MESSAGE, {
         content: `${dead.name} lose the game`,
-        severity: 'success',
+        severity: 'info',
       });
+      this.start = false;
     }
     return dead;
   }

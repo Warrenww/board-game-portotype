@@ -37,7 +37,6 @@ const BoardDisplay = ({ board, selectedCard, socket }) => {
 
   useEffect(() => {
     if (board && socket) {
-      console.table(boardWidth);
       const displayTiles = board.tiles.map( t => {
         const x = t.x * boardWidth / BOARD_SIZE;
         const y = t.y * boardWidth / BOARD_SIZE;

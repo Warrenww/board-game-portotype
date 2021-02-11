@@ -7,6 +7,8 @@ const EventName = {
   'UPDATE_CARD_POOLS': 'update cardPools',
   'UPDATE_BOARD': 'update board',
   'PLACE_TILE': 'place tile',
+  'SKIP': 'skip',
+  'FREE_SKIP': 'free skip',
 };
 
 export default EventName;

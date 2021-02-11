@@ -72,13 +72,14 @@ export const StyledCardsDisplay = styled(Drawer)`
   }
 `;
 
-export const ShowCardsButton = styled(Button)`
+export const FunctionButton = styled(Button)`
   &.ant-btn {
     position: fixed;
-    bottom: 2em;
-    left: 2em;
+    bottom: ${props => props.bottom ?? 0}em;
+    right: 2em;
     width: 3em;
     height: 3em;
+    background-color: ${props => props.backgroundColor ?? ''} !important;
   }
   & svg {
     height: 60%;

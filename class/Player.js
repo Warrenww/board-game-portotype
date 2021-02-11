@@ -1,7 +1,7 @@
 import EventName from '../src/const/socketEvent';
 import Card from './Card';
 import CardPools from '../src/const/CardPools';
-
+import { shuffle } from '../utils';
 const {
   UPDATE_CARD_POOLS,
 } = EventName;
@@ -12,7 +12,8 @@ export default class Player {
     this.id = socket.id;
     this.socket = socket;
     this.hp = 30;
-    this.cardPools = CardPools.map(x => new Card(x));
+    this.skipTimes = 0;
+    this.cardPools = shuffle(CardPools.map(x => new Card(x)));
   }
 
   applyDamage(damage) {

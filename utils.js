@@ -4,3 +4,10 @@ export const uuidv4 = () => {
     return v.toString(16);
   });
 }
+
+export const shuffle = (arr) => {
+  if (Array.isArray(arr)) {
+    return arr.sort((a, b) => Math.random() - Math.random());
+  }
+  return arr;
+}

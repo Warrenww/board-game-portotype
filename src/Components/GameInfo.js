@@ -3,11 +3,20 @@ import {
   Typography,
   Col,
 } from 'antd';
-import { GameInfoDiv, StyledPlayerInfo } from './styles';
+import {
+  FastForwardOutlined,
+} from '@ant-design/icons';
+import {
+  GameInfoDiv,
+  StyledPlayerInfo,
+  FunctionButton,
+} from './styles';
 import EventName from '../const/socketEvent';
 
 const {
   UPDATE_PLAYERS,
+  SKIP,
+  FREE_SKIP,
 } = EventName;
 const { Paragraph, Title } = Typography;
 
@@ -26,7 +35,8 @@ const GameInfo = ({
   socket,
 }) => {
   const [players, setPlayers] = useState([]);
-const [currentPlayer, setCurrentPlayer] =useState(null);
+  const [currentPlayer, setCurrentPlayer] =useState(null);
+  const [freeSkip, setFreeSkip] = useState(false);
 
   useEffect(() => {
     if (socket) {
@@ -34,8 +44,15 @@ const [currentPlayer, setCurrentPlayer] =useState(null);
         setPlayers(players);
         setCurrentPlayer(currentPlayer);
       });
+      socket.on(FREE_SKIP, (value) => setFreeSkip(value));
     }
   }, [socket]);
+
+  const handleSkip = () => {
+    if (socket) {
+      socket.emit(SKIP);
+    }
+  }
 
   return (
     <GameInfoDiv>
@@ -45,6 +62,14 @@ const [currentPlayer, setCurrentPlayer] =useState(null);
         <Paragraph copyable>{gameId}</Paragraph>
       </Col>
       <PlayerInfo data={players.find(x => x.id !== socket.id) || {}} currentPlayer={currentPlayer}/>
+      <FunctionButton
+        type="default"
+        backgroundColor={freeSkip ? '#43b34b' : '#da5656'}
+        shape="circle"
+        bottom={6}
+        onClick={() => handleSkip()}
+        icon={<FastForwardOutlined />}
+      />
     </GameInfoDiv>
   );
 };

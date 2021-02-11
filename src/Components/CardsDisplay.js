@@ -8,7 +8,7 @@ import {
 import Card from '../../class/Card';
 import {
   StyledCardsDisplay,
-  ShowCardsButton,
+  FunctionButton,
   StyledCardDisplay,
 } from './styles';
 
@@ -39,10 +39,11 @@ const CardsDisplay = ({ cards, setSelectedCard, selectedCard }) => {
 
   return (
     <>
-      <ShowCardsButton
+      <FunctionButton
         type="primary"
         shape="circle"
-        onClick={() => setVisible(true)}
+        bottom={2}
+        onClick={() => setVisible(!visible)}
         icon={<IdcardOutlined />}
       />
       <StyledCardsDisplay

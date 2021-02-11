@@ -86,9 +86,17 @@ export default class Board {
     this.game.applyDamageToOther(player,damage);
 
 
+    this.game.resetSkip();
     this.SendBoardToClient();
     this.game.switchPlayer();
     return Promise.resolve();
+  }
+
+  clear() {
+    this.tiles.forEach(t => {
+      t.occupied = null;
+    });
+    this.SendBoardToClient();
   }
 
   get publicData() {

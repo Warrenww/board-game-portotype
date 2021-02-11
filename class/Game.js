@@ -8,6 +8,8 @@ const {
   MESSAGE,
   UPDATE_PLAYERS,
   PLACE_TILE,
+  SKIP,
+  FREE_SKIP,
 } = EventName;
 
 export default class Game {
@@ -18,6 +20,7 @@ export default class Game {
     this.board = new Board({game:this});
     this.currentPlayerIdx = null;
     this.start = false;
+    this.skip = false;
 
     this.bindSocketEvents();
   }
@@ -38,10 +41,29 @@ export default class Game {
             severity: 'error',
           });
         }
+      });
 
+      socket.on(SKIP, () => {
+        if (this.skip) {
+          this.board.clear();
+          this.switchPlayer();
+          this.resetSkip();
+        } else {
+          const p = this.getPlayerById(socket.id);
+          p.skipTimes ++;
+          p.applyDamage(p.skipTimes);
+          this.skip = true;
+          socket.broadcast.emit(FREE_SKIP, true);
+          this.switchPlayer();
+          this.sendPlayersToClient();
+        }
       });
     });
+  }
 
+  resetSkip() {
+    this.skip = false;
+    this.io.emit(FREE_SKIP, false);
   }
 
   playerJoin(socket, playerName) {

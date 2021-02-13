@@ -10,6 +10,7 @@ const {
   PLACE_TILE,
   SKIP,
   FREE_SKIP,
+  GAME_END,
 } = EventName;
 
 export default class Game {
@@ -44,14 +45,22 @@ export default class Game {
       });
 
       socket.on(SKIP, () => {
+        const p = this.getPlayerById(socket.id);
+        if (!this.checkIsCurrentPlayer(p)) {
+          socket.emit(MESSAGE, {
+            content: 'Not your turn.',
+            severity: 'error',
+          });
+          return;
+        }
         if (this.skip) {
           this.board.clear();
           this.switchPlayer();
           this.resetSkip();
         } else {
-          const p = this.getPlayerById(socket.id);
           p.skipTimes ++;
           p.applyDamage(p.skipTimes);
+          this.checkEndGame();
           this.skip = true;
           socket.broadcast.emit(FREE_SKIP, true);
           this.switchPlayer();
@@ -122,6 +131,7 @@ export default class Game {
         content: `${dead.name} lose the game`,
         severity: 'info',
       });
+      this.io.emit(GAME_END, {players: this.players.map(p => p.publicData)});
       this.start = false;
     }
     return dead;

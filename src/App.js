@@ -7,6 +7,7 @@ import BoardDisplay
 import GameInfo from './Components/GameInfo';
 import CardsDisplay from './Components/CardsDisplay';
 import JoinGameModal from './Components/JoinGameModal';
+import EndGameModule from './Components/EndGameModule';
 import { message } from 'antd';
 import Card from '../class/Card';
 import Board from '../class/Board';
@@ -20,6 +21,7 @@ const {
   MESSAGE,
   UPDATE_CARD_POOLS,
   UPDATE_BOARD,
+  GAME_END,
 } = EventName;
 
 const App = () => {
@@ -29,6 +31,8 @@ const App = () => {
   const [cards, setCards] = useState([]);
   const [selectedCard, setSelectedCard] = useState(null);
   const [board, setBoard] = useState(null);
+  const [showEndGame, setShowEndGame] = useState(false);
+  const [players, setPlayers] = useState([]);
 
   const Alert = useCallback(({
     content = '',
@@ -56,6 +60,10 @@ const App = () => {
       socket.on(PLAYER_JOIN_FAILED, () => setGameId(null));
       socket.on(UPDATE_CARD_POOLS, (cards) => setCards(cards.map(card => new Card(card))));
       socket.on(UPDATE_BOARD, (b) => setBoard(new Board(b)));
+      socket.on(GAME_END, (data) => {
+        setPlayers(data.players);
+        setShowEndGame(true);
+      });
     }
   }, [socket, playerName, Alert]);
 
@@ -92,6 +100,10 @@ const App = () => {
         cards={cards}
         setSelectedCard={setSelectedCard}
         selectedCard={selectedCard}
+      />
+      <EndGameModule
+        show={showEndGame}
+        players={players}
       />
     </AppContainer>
   );

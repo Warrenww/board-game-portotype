@@ -9,6 +9,7 @@ const EventName = {
   'PLACE_TILE': 'place tile',
   'SKIP': 'skip',
   'FREE_SKIP': 'free skip',
+  'GAME_END': 'game end',
 };
 
 export default EventName;

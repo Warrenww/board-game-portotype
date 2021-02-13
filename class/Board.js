@@ -85,7 +85,7 @@ export default class Board {
     }, 0);
     this.game.applyDamageToOther(player,damage);
 
-
+    player.static.cardPlaced ++;
     this.game.resetSkip();
     this.SendBoardToClient();
     this.game.switchPlayer();

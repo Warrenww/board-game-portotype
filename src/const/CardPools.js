@@ -35,18 +35,6 @@ const CardPools = [
     group: '通用',
     shape: [[0,0],[0,1],[1,1],[2,1]],
   },
-  {
-    group: '通用',
-    shape: [[1,0],[1,1],[1,2],[0,2]],
-  },
-  {
-    group: '通用',
-    shape: [[0,0],[1,0],[2,0],[2,1]],
-  },
-  {
-    group: '通用',
-    shape: [[0,0],[1,0],[0,1],[0,2]],
-  },
 ];
 
 export default CardPools;

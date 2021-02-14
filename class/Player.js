@@ -14,9 +14,6 @@ export default class Player {
     this.hp = 30;
     this.skipTimes = 0;
     this.cardPools = shuffle(CardPools.map(x => new Card(x)));
-    this.static = {
-      cardPlaced: 0,
-    };
   }
 
   applyDamage(damage) {
@@ -28,7 +25,6 @@ export default class Player {
       name: this.name,
       id: this.id,
       hp: this.hp,
-      static: this.static,
     }
   }
 
